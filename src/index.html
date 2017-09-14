@@ -1,14 +1,431 @@
 <!doctype html>
-<html lang="en">
+<html lang="en"  >
 <head>
-  <meta charset="utf-8">
+  
+    <meta charset="utf-8" http-equiv="X-UA-Compatible" content="IE=10">
+
   <title>TestApp</title>
-  <base href="/">
+  
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  
+  <SharePoint:ScriptLink name="clienttemplates.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="clientforms.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="clientpeoplepicker.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="autofill.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="sp.RequestExecutor.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="sp.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="sp.runtime.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  <SharePoint:ScriptLink name="sp.core.js" runat="server" LoadAfterUI="true" Localizable="false" />
+
+  <script src="//cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
+
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  
+<!-- Add your CSS styles to the following file      -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  
+    <!-- Add your JavaScript to the following file -->
+    
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+		
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
+	<link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" rel="Stylesheet" type="text/css">
+	
+	
+	<script src="//d3js.org/d3.v4.min.js"></script>
+
+
+    <script src="/sites/dev/JavascriptFiles/dimple.v2.3.0.min.js"></script>
+	
+    <script type="text/javascript">
+		var monthArray;
+		var daysArray;
+		var gArrayOld;
+		var isPie;
+		var isBar;
+		var isMonth;
+		var isDays;
+		var isChange=false;
+       var routeURL="sites/dev/SitePages/a4page.aspx/dash";
+       var localURL="/sites/dev";
+        ExecuteOrDelayUntilScriptLoaded(function () {
+         
+        }, "sp.js");
+
+
+        
+
+        // Load the required SharePoint libraries
+        $(document).ready(function () {
+            //Get the URI decoded URLs.
+            //$('#DeltaPlaceHolderPageTitleInTitleArea').css('display','none');
+            // resources are in URLs in the form:
+            // web_url/_layouts/15/resource
+            var scriptbase =  "/_layouts/15/";
+            // Load the js files and continue to the successHandler
+			
+            $.getScript(scriptbase + "SP.RequestExecutor.js", function(){
+				console.log('done with SP.RequestExecutor ');
+				
+			});
+			//
+			
+			
+			
+        });
+	
+//getting DOM ready...
+	isDatePic = false;
+	setInterval(function(){
+   		
+   			$(document).ready(function () {
+				//if(!isDatePic){
+						//isDatePic=true;
+						//$('.datepicker').datepicker();
+								
+						//$('.dropdown-toggle').dropdown();
+						
+					//}
+					//for graphic....
+					if(isChange==true){ 
+						console.log('time to change Graph'); 
+						isChange = false;
+						if(isPie)showGraph();else if(isBar)showBarGraph(); 
+						
+					}
+	
+			});	
+	
+   	}
+   	,1000);
+// Upload the file.
+// You can upload files up to 2 GB with the REST API.
+function uploadFile() {
+
+	$('#uploadWarning').css('display','none');
+	$('#uploadSuccess').css('display','none');
+	$('#uploadDanger').css('display','none');
+	$('#btnFile').attr('disabled','disabled');
+	
+    // Define the folder path for this example.
+    var serverRelativeUrlToFolder = 'CARTDocs/'+$('#uploadFileId').html();
+	
+	console.log('Project name..' + serverRelativeUrlToFolder);
+	//'shared documents';
+
+    // Get test values from the file input and text input page controls.
+    var fileInput = $('#getFile');
+	var newName = '';
+	if(fileInput[0].files.length>0)
+     newName = fileInput[0].files[0].name;
+	else {
+		$('#uploadWarning').css('display','');
+		$('#btnFile').removeAttr('disabled');
+		
+		return false;
+	} 
+    // Get the server URL.
+    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+
+    // Initiate method calls using jQuery promises.
+    // Get the local file as an array buffer.
+	 var getFile = getFileBuffer();
+	if(newName.length<0) getFile = null;
+   
+    getFile.done(function (arrayBuffer) {
+
+        // Add the file to the SharePoint folder.
+        var addFile = addFileToFolder(arrayBuffer);
+        addFile.done(function (file, status, xhr) {
+
+            // Get the list item that corresponds to the uploaded file.
+            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
+            getItem.done(function (listItem, status, xhr) {
+
+                // Change the display name and title of the list item.
+				//ParentID , CARTProjectName
+                var changeItem = updateListItem(listItem.d.__metadata,$('#FileId').html(),$('#uploadFileId').html());
+                changeItem.done(function (data, status, xhr) {
+                    //alert('file uploaded and updated');
+					
+					$('#uploadSuccess').css('display','');
+					
+					$('#btnFile').removeAttr('disabled');
+					
+					fileInput.replaceWith(fileInput = fileInput.clone(true));
+					if(fileInput.val) fileInput.val('');
+					console.log(fileInput[0].files);
+					
+                });
+                changeItem.fail(onError);
+            });
+            getItem.fail(onError);
+        });
+        addFile.fail(onError);
+    });
+    getFile.fail(onError);
+
+    // Get the local file as an array buffer.
+    function getFileBuffer() {
+        var deferred = jQuery.Deferred();
+        var reader = new FileReader();
+        reader.onloadend = function (e) {
+            deferred.resolve(e.target.result);
+        }
+        reader.onerror = function (e) {
+            deferred.reject(e.target.error);
+        }
+        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        return deferred.promise();
+    }
+
+    // Add the file to the file collection in the Shared Documents folder.
+    function addFileToFolder(arrayBuffer) {
+
+        // Get the file name from the file input control on the page.
+        var parts = fileInput[0].value.split('\\');
+        var fileName = parts[parts.length - 1];
+
+        // Construct the endpoint.
+        var fileCollectionEndpoint = String.format(
+                "{0}/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
+                "/add(overwrite=true, url='{2}')",
+                serverUrl, serverRelativeUrlToFolder, fileName);
+
+        // Send the request and return the response.
+        // This call returns the SharePoint file.
+        return jQuery.ajax({
+            url: fileCollectionEndpoint,
+            type: "POST",
+            data: arrayBuffer,
+            processData: false,
+            headers: {
+                "accept": "application/json;odata=verbose",
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-length": arrayBuffer.byteLength
+            }
+        });
+    }
+
+    // Get the list item that corresponds to the file by calling the file's ListItemAllFields property.
+    function getListItem(fileListItemUri) {
+
+        // Send the request and return the response.
+        return jQuery.ajax({
+            url: fileListItemUri,
+            type: "GET",
+            headers: { "accept": "application/json;odata=verbose" }
+        });
+    }
+
+    // Change the display name and title of the list item.
+    function updateListItem(itemMetadata, ParentID , CARTProjectName) {
+		//ParentID , CARTProjectName
+        // Define the list item changes. Use the FileLeafRef property to change the display name. 
+        // For simplicity, also use the name as the title. 
+        // The example gets the list item type from the item's metadata, but you can also get it from the
+        // ListItemEntityTypeFullName property of the list.
+        var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ParentID':'{3}','CARTProjectName':'{4}'}}",
+            itemMetadata.type, newName, newName,ParentID,CARTProjectName);
+
+        // Send the request and return the promise.
+        // This call does not return response content from the server.
+        return jQuery.ajax({
+            url: itemMetadata.uri,
+            type: "POST",
+            data: body,
+            headers: {
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
+                "content-type": "application/json;odata=verbose",
+                "content-length": body.length,
+                "IF-MATCH": itemMetadata.etag,
+                "X-HTTP-Method": "MERGE"
+            }
+        });
+    }
+}
+
+	// Display error messages. 
+	function onError(error) {
+		console.log(error.responseText);
+		$('#btnFile').removeAttr('disabled');
+		$('#uploadDanger').css('display','');
+		
+	}
+		
+	function setfocus(elm){
+	
+		//document.getElementById(elm).focus();
+		//document.getElementById('linkTurnOffAcc').focus();return false;
+		
+	}
+	function showPeople(elm,peoplePickerDiv, isMulti){
+
+		//file upload....
+		//var peoplePickerDiv = $('#peoplePickerDiv');
+		var loginName = elm.value;
+		var userid = elm.name;
+		if(loginName.length>0)
+			initializePeoplePicker(peoplePickerDiv,loginName,userid,isMulti);	
+		else
+			initializePeoplePicker(peoplePickerDiv,null,null,isMulti);	
+		
+		
+		$('#'+peoplePickerDiv+'_TopSpan').attr('style','width:300px;height: 40px;border-color: #92c0e0;border-radius: 4px;');
+		//SPClientPeoplePickerProcessedUser.DeleteProcessedUser($('#peoplePickerDiv_TopSpan_ResolvedList')[0].firstChild)
+	}
+
+	function showUpload(){
+	//file upload....
+	    $('#uploadSuccess').css('display','none');
+    }
+// Render and initialize the client-side People Picker.
+function initializePeoplePicker(peoplePickerElementId, displayName, userName , isMulti) {
+	//width: 300px;height: 45px;border-color: #92c0e0;border-radius: 4px;
+    // Create a schema to store picker properties, and set the properties.
+    var schema = {};
+    schema['PrincipalAccountType'] = 'User,DL,SecGroup,SPGroup';
+    schema['SearchPrincipalSource'] = 15;
+    schema['ResolvePrincipalSource'] = 15;
+    schema['AllowMultipleValues'] = isMulti;
+    schema['MaximumEntitySuggestions'] = 50;
+    schema['Width'] = '300px';
+	
+    var users = null;
+    if (displayName != null) {
+        users = new Array(1);
+        var user = new Object();
+        user.AutoFillDisplayText = displayName;
+        user.AutoFillKey = userName;
+        user.AutoFillSubDisplayText = "";
+        user.DisplayText = displayName;
+        user.EntityType = "User";
+        user.IsResolved = true;
+        user.Key = userName;
+        user.ProviderDisplayName = "Tenant";
+        user.ProviderName = "Tenant";
+        user.Resolved = true;
+        users[0] = user;
+    }
+    // Render and initialize the picker. 
+    // Pass the ID of the DOM element that contains the picker, an array of initial
+    // PickerEntity objects to set the picker value, and a schema that defines
+    // picker properties.
+    SPClientPeoplePicker_InitStandaloneControlWrapper(peoplePickerElementId, users, schema);
+}
+//route graphics...
+function showBarGraphs(){
+	if(isBar) showBarGraph();
+	else if(isPie) showGraph();
+}
+
+function showBarGraph(){
+
+	var data ;
+	if(isMonth)
+			data = monthArray;
+		else if(isDays)  
+			data = daysArray;
+		
+	gArrayOld = data;
+	
+	var tempData=[];
+	for(var index=data.length;index>0;index--){
+	
+		 if(data[index-1].value.length)
+			data[index-1].value = data[index-1].value.length;
+			
+		
+		if(data[index-1].key !="undefined"){
+			if(data[index-1].key.indexOf('(')<0)
+				data[index-1].key += "("+data[index-1].value+")";
+			console.log(data[index-1].key);
+			
+			tempData.push(data[index-1]);
+		}
+		
+	}
+	data = tempData;
+	///bar char..
+	var svg = dimple.newSvg("svg", 800, 600);
+	var myChart = new dimple.chart(svg, data);
+      myChart.setBounds(80, 30, 480, 330)
+      myChart.addMeasureAxis("x", "value");
+      myChart.addCategoryAxis("y", ["key"]);
+      myChart.addSeries("key", dimple.plot.bar);
+      myChart.addLegend(200, 10, 380, 20, "right");
+      myChart.draw();
+      //clean 
+	var element =  $('#mysvg');
+	if(element && element.length>=1){
+		var parent = element[0];
+		for(var i = 0; i<parent.childNodes.length-1;i++){
+			var item = parent.childNodes[i];
+			parent.removeChild(item);
+		}
+	}
+
+
+}
+//new code...
+function showGraph(){
+	var chartData;
+	if(isMonth)
+		chartData = monthArray;
+	else if(isDays)  
+		chartData = daysArray;
+	
+	var tempData=[];
+	for(var index=chartData.length;index>0;index--){
+	
+		 if(chartData[index-1].value.length)
+			chartData[index-1].value = chartData[index-1].value.length;
+			
+		
+		if(chartData[index-1].key !="undefined"){
+			if(chartData[index-1].key.indexOf('(')<0)
+				chartData[index-1].key += "("+chartData[index-1].value+")"; 
+			console.log(chartData[index-1].key);
+			tempData.push(chartData[index-1]);
+		}
+		
+	}
+	chartData = tempData;
+	
+	//NEW CODE
+	var svg = dimple.newSvg("svg", 800, 600);
+	var myChart = new dimple.chart(svg, chartData);
+	myChart.setBounds(20, 20, 460, 360)
+	myChart.addMeasureAxis("p", "value");
+	var ring = myChart.addSeries("key", dimple.plot.pie);
+	ring.innerRadius = "50%";
+	myChart.addLegend(500, 20, 90, 300, "left");
+    myChart.draw();
+    //clean 
+	var element =  $('#mysvg');
+	if(element && element.length>=1){
+		var parent = element[0];
+		for(var i = 0; i<parent.childNodes.length-1;i++){
+			var item = parent.childNodes[i];
+			parent.removeChild(item);
+		}
+	}
+
+
+}	
+
+
+
+</script>
+
+
 </head>
 <body>
-  <app-root></app-root>
+<base href="/">
+  <app-root>Loading Components...</app-root>
 </body>
 </html>

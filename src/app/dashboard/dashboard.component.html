@@ -1,0 +1,177 @@
+<div *ngIf="!isFull">
+		<h2>Loading...
+			<img src="/_layouts/15/images/gears_anv4.gif"  height="35" width="35">
+		</h2>
+      
+</div>
+
+<table class="table table-striped" *ngIf="isFull">
+<tr>
+<td style="width:320px">
+	<div class="input-group date" data-provide="datepicker"  style="width:300px" (focusout)="changeDateValue($event.target.value,'initDate')"  >
+		
+		<input type="text" class="form-control" id="initDate" placeholder="Init Date" [(ngModel)]="initDate" (change)="changeDateValue($event.target.value,'')" (keyup)="changeDateValue($event.target.value,'initDate')" >
+		<div class="input-group-addon" onclick="document.getElementById('initDate').focus();return false;" >
+			<span class="glyphicon glyphicon-th"></span>
+		</div>
+	</div></td>
+<td style="width:320px">
+	<div class="input-group date" data-provide="datepicker" style="width:300px" (focusout)="changeDateValue($event.target.value,'endDate')"  >
+		
+		<input type="text" class="form-control" id="endDate" placeholder="End Date" [(ngModel)]="endDate" (change)="changeDateValue($event.target.value,'')" (keyup)="changeDateValue($event.target.value,'endDate')">
+		<div class="input-group-addon" onclick="document.getElementById('endDate').focus();return false;">
+			<span class="glyphicon glyphicon-th"></span>
+		</div>
+	</div>
+</td>
+
+
+</tr>
+<tr>
+<td style="width:320px">
+<select class="form-control" style="width:300px"  [(ngModel)]="value" (change)="changeValue($event.target.value)">
+ <option value="All" >All Records</option>
+  <option value="ProjectName">Project Name</option>
+  <option value="Status">Status</option>
+  <option value="Requester">Requester</option>
+  <option value="Reviewer">Reviewer</option>
+  <option value="ID">ID</option>
+</select> 
+</td>
+<td style="width:320px">
+	<div class="input-group" style="width:350px">
+		<input type="text" class="form-control" placeholder="Search" [(ngModel)]="search">
+		<div class="input-group-btn">
+		  <button class="btn btn-info"  type="button" (click)="goSearch()" *ngIf="!isSearch" >
+			<i class="glyphicon glyphicon-search"></i>
+		  </button>
+		  <button class="btn btn-info"  type="button" (click)="goSearch()" *ngIf="isSearch" disabled>
+			<i class="glyphicon glyphicon-search">Searching..</i>
+		  </button>
+		</div>
+  </div>
+ 
+</td>
+</tr>	
+<tr>
+<td style="width:320px">
+
+<div class="alert alert-default" style="display:">
+  <strong>Records: {{projectList.length}}</strong> 
+</div>
+<h4 *ngIf="isSearch">Searching...
+			<img src="/_layouts/15/images/gears_anv4.gif" alt="Smiley face" height="30" width="30">
+		</h4>
+</td>
+<td style="width:320px">
+ <div class="input-group" style="width:350px">
+		<div class="input-group-btn" >
+			
+			  <h3 style="margin-top:auto;margin-right:10px"><span class="label label-info"><a href={{newUrl}} style="color: aliceblue;"><i class="glyphicon glyphicon-plus">New Request</i></a></span></h3>
+					
+		</div>
+		<div class="input-group-btn">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+				document.getElementById('graphId').style.display='';document.getElementById('dashDiv').style.display='';
+				isPie=false;isBar=true;isMonth=true;showBarGraph();">
+					<i class="glyphicon glyphicon-list">Graphics</i> 
+				</button>
+		  
+		</div>
+		<div class="input-group-btn" id="dashDiv" style="display:none">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='';
+				document.getElementById('graphId').style.display='none'; document.getElementById('dashDiv').style.display='none'">
+					<i class="glyphicon glyphicon-tasks">Dashboard</i>
+				</button>
+		  
+		</div>
+			
+
+  </div>
+</td>
+
+</tr>
+</table>
+
+<div *ngIf="isFull">
+    
+    <table class="table table-hover" id="dashID">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th style="width:320px">Project Name</th>
+                <th>Status</th>
+                <th style="width:320px">Requester</th>
+                <th style="width:320px">Reviewer</th>
+                <th style="width:120px">Initiated</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let task of projectList">
+                <td>
+                    <h2><span class="label label-info"><a href={{task.nameurl}} style="color: aliceblue;">{{task.id}}</a></span></h2>
+                    <!--<button type="button" (click)="goProject(task)" class="btn btn-info">{{task.id}}</button>-->
+					
+                    
+                </td>
+                <td>{{task.name}}</td>
+                <td>{{task.status}}</td>
+                <td>{{task.requester}}</td>
+                <td>{{task.reviewer}}</td>
+                <td>{{task.initDT }}</td>
+
+
+            </tr>
+          
+        </tbody>
+    </table>
+
+</div>
+
+<div id="graphId" style="display:none">
+	<div class="input-group-btn">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+				document.getElementById('graphId').style.display='';isPie=true;isBar=false;showGraph();">
+					<i class="glyphicon glyphicon-copyright-mark">Circular</i>
+				</button>
+		  
+		</div>
+		<div class="input-group-btn">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+				document.getElementById('graphId').style.display='';isMonth=true;isDays=false;showBarGraphs();">
+					<i class="glyphicon glyphicon-calendar">Months</i>
+				</button>
+		  
+		</div>
+		<div class="input-group-btn">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+				document.getElementById('graphId').style.display='';isMonth=false;isDays=true;showBarGraphs();">
+					<i class="glyphicon glyphicon-calendar">Days</i>
+				</button>
+		  
+		</div>
+		<div class="input-group-btn">
+				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+				document.getElementById('graphId').style.display='';isPie=false;isBar=true;showBarGraph();">
+					<i class="glyphicon glyphicon-list">Bar</i>
+				</button>
+		  
+		</div>
+
+	<svg width="1200" height="500" id="mysvg"></svg>
+		
+</div>
+<script type="text/javascript">
+
+ 
+</script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<svg width="300" height="300"></svg>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">CTOTOOLSCART-884235560-10</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">bc111a45-e706-40b9-9801-b8e764a1e636</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://chieftechnologyoffice.home.citi.net/tools/cart/_layouts/15/DocIdRedir.aspx?ID=CTOTOOLSCART-884235560-10, CTOTOOLSCART-884235560-10</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+
+</head>
