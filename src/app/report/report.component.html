@@ -1,0 +1,279 @@
+<div *ngIf="!isFull">
+  <h2>Loading...
+    <img src="/_layouts/15/images/gears_anv4.gif"  height="25" width="25">
+  </h2>
+    
+</div>
+
+<table class="table table-table" *ngIf="isFull" id="tableHeader" style="width:70%">
+      <tr>
+        <td style="width:320px;border-top:0px">
+          <div class="input-group date" data-provide="datepicker"  style="width:300px" (focusout)="changeDateValue($event.target.value,'initDate')"  >
+            
+            <input type="text" class="form-control" id="initDate" placeholder="Init Date" [(ngModel)]="initDate" (change)="changeDateValue($event.target.value,'')" 
+            (keyup)="changeDateValue($event.target.value,'initDate')" disabled >
+            <div class="input-group-addon" onclick="document.getElementById('initDate').focus();return false;" >
+              <span class="glyphicon glyphicon-th"></span>
+            </div>
+          </div>
+        </td>
+        <td style="width:320px;border-top:0px">
+          <div class="input-group date" data-provide="datepicker" style="width:300px" (focusout)="changeDateValue($event.target.value,'endDate')"  >
+          
+          <input type="text" class="form-control" id="endDate" placeholder="End Date" [(ngModel)]="endDate" (change)="changeDateValue($event.target.value,'')" 
+          (keyup)="changeDateValue($event.target.value,'endDate')" disabled>
+          <div class="input-group-addon" onclick="document.getElementById('endDate').focus();return false;">
+            <span class="glyphicon glyphicon-th"></span>
+          </div>
+          
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td style="width:320px;border-top:0px">
+        <select class="form-control" style="width:300px"  [(ngModel)]="AllRecord" (change)="changeValue($event.target.value)">
+          <option value="All">All Records (Name is default filter)</option>
+          <option value="ProjectName">Project Name</option>
+          <option value="Status">Status</option>
+          <option value="Requester">Requester</option>
+          <option value="Reviewer">Reviewer</option>
+          <option value="ID">ID</option>
+        </select> 
+        </td>
+        <td style="width:320px;border-top:0px">
+          <div class="input-group" style="width:399px">
+            <input  id="idSearch" type="text" class="form-control" placeholder="Click [Show All] before next search" [(ngModel)]="filterQuery" disabled>
+            <div class="input-group-btn">
+              <button  id="idAll" class="btn btn-info"  type="button" (click)="changeValue('All')"  disabled>
+                <i class="glyphicon glyphicon-list">Show All</i>
+              </button>
+            
+            </div>
+          </div>
+        </td>
+      </tr>	
+      <tr>
+        <td style="width:320px;border-top:0px">
+          <div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList.length}}</strong></div>
+          
+        </td>
+        <td style="width:320px;border-top:0px">
+        <div class="input-group" style="width:350px">
+            <div class="input-group-btn" >
+              
+              <h3 id="H3newReq" style="margin-top:auto;margin-right:5px;display:none"><span class="label label-info">
+                <a [routerLink]="[routerUrl,'new','0']" style="color: aliceblue;"><i class="glyphicon glyphicon-plus">New Request</i></a></span></h3>
+                
+            </div>
+           
+            <div class="input-group-btn" *ngIf="isInGroup">
+                
+                <h3 id="H3Grap" style="margin-top:auto;margin-right:2px;display:none"><span class="label label-info">
+                  <a href="{{rootUrl+'/SitePages/CARTDash.aspx'}}"   
+                  style="color: aliceblue;">
+                  <i class="glyphicon glyphicon-th-large">Dashboard</i></a></span>
+                </h3>
+            
+            </div>
+            <div class="input-group-btn" id="dashDiv" style="display:none">
+                
+                <h2 style="margin-top:auto;margin-right:2px"><span class="label label-info">
+                  <a href='javascript:;' style="color: aliceblue;" onclick="onDashboard();">
+                  <i class="glyphicon glyphicon-list">Dashboard</i></a></span>
+                </h2>
+            
+            </div>
+              
+
+          </div>
+        </td>
+
+      </tr>
+      <tr colspan="2" *ngIf="!isInGroup">
+        <td colspan="2">
+            <h3 style="text-align:center"><span>CART Requester Dashboard</span></h3>
+            <h3><span>Please review the content (in FAQ format) in the [CART SP] User Guide to get some familiarity with the CART process before creating a CART request if not already familiar with the CART process.</span></h3>
+            <h3><span>Please click on the following links to obtain the template as needed,&nbsp;<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="https://chieftechnologyoffice.home.citi.net/tools/cart/Documents/Cloud_Assessment-Form_V6_2017.xlsx"><span><span>CCSAP Checklist</span></span></a>
+              .&nbsp;<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="https://chieftechnologyoffice.home.citi.net/tools/cart/Documents/POC%20%20CART%20Presentation%20Template%20with%20guide%20text%20-%20v1.pptx"><span><span>POC Presentation template</span></span></a>
+              .Additional CART related documents can be found in the [Links to other Docs] tab of the User Guide.</span></h3>
+            
+          </td>
+      </tr>
+    </table>
+
+ 
+<div *ngIf="isFull" class="row">
+  
+    <div class="panel panel-default" id="dashID" >
+      <table  class="table table-table" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable"
+         [(mfSortBy)]="sortBy" [(mfSortOrder)]="sortOrder">
+                <thead>
+        <tr colspan="5">
+          	
+        </tr>
+        <tr>
+          <th style="width: 5%">
+            <mfDefaultSorter by="id">Id</mfDefaultSorter>
+          </th>
+          <th style="width: 5%">
+            <mfDefaultSorter by="status">Request Status</mfDefaultSorter>
+          </th>
+          <th style="width: 5%">
+            <mfDefaultSorter by="productName">Product</mfDefaultSorter>
+          </th>
+          <th style="width: 5%">
+            <mfDefaultSorter by="CSI">CSI</mfDefaultSorter>
+          </th>
+          <th style="width: 5%">
+            <mfDefaultSorter by="CTCID">CTC</mfDefaultSorter>
+          </th>
+          <th style="width: 10%">
+            <mfDefaultSorter by="DataClassificationType">Data Classification</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="TypeOfRequest">Type of Request</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="TypeOfService">Type of Service</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="initDT">Process Initiation Date</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="goLiveST">Go Live Date</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="bdrationaled">Brief Description Rationale</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="sector">Sector</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="TPUDate">TPU</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="ESCDate">ESC Sourcing</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="SectorArchDate">Architecture</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="DRCOBDate">COB Program Operations</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="DataPrivacyDate">Product Compliance Privacy</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="POCPilotWG">POC Pilot WC Review</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="SISOSector">Sector ISO</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="ISROCDate">ISROC</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="ReadyForAppDate">Ready for CART</mfDefaultSorter>
+          </th>
+          <th>
+            <mfDefaultSorter by="CARTAppDate">CART Approved</mfDefaultSorter>
+          </th>
+        </tr>
+        <tr style="display:none">
+          <th colspan="5">
+            Filter by name:
+            <input class="form-control" [(ngModel)]="filterQuery"/>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr *ngFor="let item of mf.data">
+          <td><h2><span class="label " >
+            <a   [routerLink]="[routerUrl,item.id]" *ngIf="item.isRegForm">{{item.id}}</a>
+            <a    href="{{rootUrl+item.nameurl}}" *ngIf="!item.isRegForm">{{item.id}}</a></span></h2></td>
+          <td [ngClass]="{'green-report':item.statusReport}">{{item.status}}</td>
+          <td>{{item.productName}}</td>
+          <td>{{item.CSI}}</td>
+          <td>{{item.CTCID}}</td>
+          <td>{{item.DataClassificationType}}</td>
+          <td>{{item.TypeOfRequest}}</td>
+          <td>{{item.TypeOfService}}</td>
+          <td [ngClass]="{'dates-report':item.datesReport}">{{item.initDT}}</td>
+          <td [ngClass]="{'dates-report':item.datesReport}">{{item.goLiveST}}</td>
+          <td>{{item.bdrationaled}}</td>
+          <td>{{item.sector}}</td>
+          <td [ngClass]="{'green-report':item.tpuReport}">{{item.TPUDate}}</td>
+          <td [ngClass]="{'green-report':item.ESCDateReport}">{{item.ESCDate}}</td>
+          <td [ngClass]="{'green-report':item.SectorArchReport}">{{item.SectorArchDate}}</td>
+          <td [ngClass]="{'green-report':item.DRCOBReport}">{{item.DRCOBDate}}</td>
+          <td [ngClass]="{'gray-report':item.dataReport}">{{item.DataPrivacyDate}}</td>
+          <td [ngClass]="{'gray-report':item.pocpilotReport}">{{item.POCPilotWG}}</td>
+          <td>{{item.SISOSector}}</td>
+          <td [ngClass]="{'green-report':item.isrocReport}">{{item.ISROCDate}}</td>
+          <td>{{item.ReadyForAppDate}}</td>
+          <td>{{item.CARTAppDate}}</td>
+          
+        </tr>
+        </tbody>
+        <tfoot>
+        <tr style="display:none">
+          <td colspan="5">
+              <mfBootstrapPaginator [rowsOnPageSet]="[100,200,300]"></mfBootstrapPaginator>
+          </td>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+
+</div>
+
+
+<div id="graphId" style="display:none">
+  <div class="input-group-btn">
+      <button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+      document.getElementById('graphId').style.display='';isPie=true;isBar=false;showGraph();">
+        <i class="glyphicon glyphicon-copyright-mark">Circular</i>
+      </button>
+    
+  </div>
+  <div class="input-group-btn">
+      <button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+      document.getElementById('graphId').style.display='';isMonth=true;isDays=false;showBarGraphs();">
+        <i class="glyphicon glyphicon-calendar">Months</i>
+      </button>
+    
+  </div>
+  <div class="input-group-btn">
+      <button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+      document.getElementById('graphId').style.display='';isMonth=false;isDays=true;showBarGraphs();">
+        <i class="glyphicon glyphicon-calendar">Days</i>
+      </button>
+    
+  </div>
+  <div class="input-group-btn">
+      <button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
+      document.getElementById('graphId').style.display='';isPie=false;isBar=true;showBarGraph();">
+        <i class="glyphicon glyphicon-list">Bar</i>
+      </button>
+    
+  </div>
+
+<svg width="1200" height="500" id="mysvg" style="display:none"></svg>
+  
+</div>
+<script type="text/javascript">
+
+
+
+
+</script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
+<!--[if gte mso 9]><xml>
+<svg width="300" height="300"></svg>
+<mso:CustomDocumentProperties>
+<mso:_dlc_DocId msdt:dt="string">CTOTOOLSCART-884235560-10</mso:_dlc_DocId>
+<mso:_dlc_DocIdItemGuid msdt:dt="string">bc111a45-e706-40b9-9801-b8e764a1e636</mso:_dlc_DocIdItemGuid>
+<mso:_dlc_DocIdUrl msdt:dt="string">https://chieftechnologyoffice.home.citi.net/tools/cart/_layouts/15/DocIdRedir.aspx?ID=CTOTOOLSCART-884235560-10, CTOTOOLSCART-884235560-10</mso:_dlc_DocIdUrl>
+</mso:CustomDocumentProperties>
+</xml><![endif]-->
+
+</head>

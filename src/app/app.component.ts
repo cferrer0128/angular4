@@ -11,7 +11,7 @@ export class AppComponent  implements OnInit {
   title = 'app';
 
   constructor( private router: Router ) {
-    console.log('router services running..!');
+   // console.log('router services running..!');
   }
 
   ngOnInit() {

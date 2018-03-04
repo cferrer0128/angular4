@@ -5,128 +5,181 @@
       
 </div>
 
-<table class="table table-striped" *ngIf="isFull">
+<table class="table table-striped" *ngIf="isFull" id="tableHeader">
 <tr>
-<td style="width:320px">
-	<div class="input-group date" data-provide="datepicker"  style="width:300px" (focusout)="changeDateValue($event.target.value,'initDate')"  >
-		
-		<input type="text" class="form-control" id="initDate" placeholder="Init Date" [(ngModel)]="initDate" (change)="changeDateValue($event.target.value,'')" (keyup)="changeDateValue($event.target.value,'initDate')" >
-		<div class="input-group-addon" onclick="document.getElementById('initDate').focus();return false;" >
-			<span class="glyphicon glyphicon-th"></span>
+	<td style="width:320px">
+		<div class="input-group date" data-provide="datepicker"  style="width:300px" (focusout)="changeDateValue($event.target.value,'initDate')"  >
+			
+			<input type="text" class="form-control" id="initDate" placeholder="Init Date" [(ngModel)]="initDate" (change)="changeDateValue($event.target.value,'')" 
+			(keyup)="changeDateValue($event.target.value,'initDate')" disabled >
+			<div class="input-group-addon" onclick="document.getElementById('initDate').focus();return false;" >
+				<span class="glyphicon glyphicon-th"></span>
+			</div>
+		</div></td>
+	<td style="width:320px">
+		<div class="input-group date" data-provide="datepicker" style="width:300px" (focusout)="changeDateValue($event.target.value,'endDate')"  >
+			
+			<input type="text" class="form-control" id="endDate" placeholder="End Date" [(ngModel)]="endDate" (change)="changeDateValue($event.target.value,'')" 
+			(keyup)="changeDateValue($event.target.value,'endDate')" disabled>
+			<div class="input-group-addon" onclick="document.getElementById('endDate').focus();return false;">
+				<span class="glyphicon glyphicon-th"></span>
+			</div>
+			
 		</div>
-	</div></td>
-<td style="width:320px">
-	<div class="input-group date" data-provide="datepicker" style="width:300px" (focusout)="changeDateValue($event.target.value,'endDate')"  >
-		
-		<input type="text" class="form-control" id="endDate" placeholder="End Date" [(ngModel)]="endDate" (change)="changeDateValue($event.target.value,'')" (keyup)="changeDateValue($event.target.value,'endDate')">
-		<div class="input-group-addon" onclick="document.getElementById('endDate').focus();return false;">
-			<span class="glyphicon glyphicon-th"></span>
-		</div>
-	</div>
-</td>
+			</td>
+	
 
+	</tr>
+	<tr>
+		<td style="width:320px">
+		<select class="form-control" style="width:300px"  [(ngModel)]="AllRecord" (change)="changeValue($event.target.value)">
+			<option value="All">All Records (Name is default filter)</option>
+			<option value="ProjectName">Project Name</option>
+			<option value="Status">Status</option>
+			<option value="Requester">Requester</option>
+			<option value="Reviewer">Reviewer</option>
+			<option value="ID">ID</option>
+		</select> 
+		</td>
+		<td style="width:320px">
+			<div class="input-group" style="width:399px">
+				<input  id="idSearch" type="text" class="form-control" placeholder="Click [Show All] before next search" [(ngModel)]="filterQuery" disabled>
+				<div class="input-group-btn">
+					<button  id="idAll" class="btn btn-info"  type="button" (click)="changeValue('All')"  disabled>
+						<i class="glyphicon glyphicon-list">Show All</i>
+					</button>
+				
+				</div>
+			</div>
+			
+		
+		</td>
+	</tr>	
+<tr>
+	<td style="width:320px">
+		<div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList.length}}</strong></div>
+	</td>
+	<td style="width:320px">
+	<div class="input-group" style="width:350px">
+			<div class="input-group-btn" >
+				
+				<h3 id="H3newReq" style="margin-top:auto;margin-right:5px;display:none"><span class="label label-info">
+					<a [routerLink]="[routerUrl,'new','0']" style="color: aliceblue;"><i class="glyphicon glyphicon-plus">New Registration Form</i></a></span></h3>
+					
+			</div>
+			<div class="input-group" style="width:100px" *ngIf="isInGroup">
+				
+				<div class="input-group-btn">
+					
+					<h3 id="myReq" style="margin-top:auto;margin-right:5px;display:none"><span class="label label-info">
+						<a href="javascript:;" style="color: aliceblue;" (click)="showMy()"><i class="glyphicon glyphicon-th-large">My Request</i></a></span></h3>
+				
+				</div>
+			</div>
+			<div class="input-group-btn" *ngIf="isInGroup">
+					
+					<h3 id="H3Grap" style="margin-top:auto;margin-right:2px;display:none"><span class="label label-info">
+						<a  [routerLink]="[routerUrl+'/report',0]"  
+						style="color: aliceblue;">
+						<i class="glyphicon glyphicon-th-large">Graphic Report</i></a></span>
+					</h3>
+			
+			</div>
+			<div class="input-group-btn" id="dashDiv" style="display:none">
+					
+					<h2 style="margin-top:auto;margin-right:2px"><span class="label label-info">
+						<a href='javascript:;' style="color: aliceblue;" onclick="onDashboard();">
+						<i class="glyphicon glyphicon-list">Dashboard</i></a></span>
+					</h2>
+			
+			</div>
+				
+
+	</div>
+	</td>
 
 </tr>
-<tr>
-<td style="width:320px">
-<select class="form-control" style="width:300px"  [(ngModel)]="value" (change)="changeValue($event.target.value)">
- <option value="All" >All Records</option>
-  <option value="ProjectName">Project Name</option>
-  <option value="Status">Status</option>
-  <option value="Requester">Requester</option>
-  <option value="Reviewer">Reviewer</option>
-  <option value="ID">ID</option>
-</select> 
-</td>
-<td style="width:320px">
-	<div class="input-group" style="width:350px">
-		<input type="text" class="form-control" placeholder="Search" [(ngModel)]="search">
-		<div class="input-group-btn">
-		  <button class="btn btn-info"  type="button" (click)="goSearch()" *ngIf="!isSearch" >
-			<i class="glyphicon glyphicon-search"></i>
-		  </button>
-		  <button class="btn btn-info"  type="button" (click)="goSearch()" *ngIf="isSearch" disabled>
-			<i class="glyphicon glyphicon-search">Searching..</i>
-		  </button>
-		</div>
-  </div>
- 
-</td>
-</tr>	
-<tr>
-<td style="width:320px">
-
-<div class="alert alert-default" style="display:">
-  <strong>Records: {{projectList.length}}</strong> 
-</div>
-<h4 *ngIf="isSearch">Searching...
-			<img src="/_layouts/15/images/gears_anv4.gif" alt="Smiley face" height="30" width="30">
-		</h4>
-</td>
-<td style="width:320px">
- <div class="input-group" style="width:350px">
-		<div class="input-group-btn" >
+<tr colspan="2" *ngIf="!isInGroup">
+	<td colspan="2">
+			<h3 style="text-align:center"><span>CART Requester Dashboard</span></h3>
+			<h3><span>Please review the content (in FAQ format) in the [CART SP] User Guide to get some familiarity with the CART process before creating a CART request if not already familiar with the CART process.</span></h3>
+			<h3><span>Please click on the following links to obtain the template as needed,&nbsp;<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="https://chieftechnologyoffice.home.citi.net/tools/cart/Documents/Cloud_Assessment-Form_V6_2017.xlsx"><span><span>CCSAP Checklist</span></span></a>
+				.&nbsp;<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="https://chieftechnologyoffice.home.citi.net/tools/cart/Documents/POC%20%20CART%20Presentation%20Template%20with%20guide%20text%20-%20v1.pptx"><span><span>POC Presentation template</span></span></a>
+				.Additional CART related documents can be found in the [Links to other Docs] tab of the User Guide.</span></h3>
 			
-			  <h3 style="margin-top:auto;margin-right:10px"><span class="label label-info"><a href={{newUrl}} style="color: aliceblue;"><i class="glyphicon glyphicon-plus">New Request</i></a></span></h3>
-					
-		</div>
-		<div class="input-group-btn">
-				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='none';
-				document.getElementById('graphId').style.display='';document.getElementById('dashDiv').style.display='';
-				isPie=false;isBar=true;isMonth=true;showBarGraph();">
-					<i class="glyphicon glyphicon-list">Graphics</i> 
-				</button>
-		  
-		</div>
-		<div class="input-group-btn" id="dashDiv" style="display:none">
-				<button class="btn btn-info"  type="button" onclick="document.getElementById('dashID').style.display='';
-				document.getElementById('graphId').style.display='none'; document.getElementById('dashDiv').style.display='none'">
-					<i class="glyphicon glyphicon-tasks">Dashboard</i>
-				</button>
-		  
-		</div>
-			
-
-  </div>
-</td>
-
+		</td>
 </tr>
 </table>
 
-<div *ngIf="isFull">
-    
-    <table class="table table-hover" id="dashID">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th style="width:320px">Project Name</th>
-                <th>Status</th>
-                <th style="width:320px">Requester</th>
-                <th style="width:320px">Reviewer</th>
-                <th style="width:120px">Initiated</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr *ngFor="let task of projectList">
-                <td>
-                    <h2><span class="label label-info"><a href={{task.nameurl}} style="color: aliceblue;">{{task.id}}</a></span></h2>
-                    <!--<button type="button" (click)="goProject(task)" class="btn btn-info">{{task.id}}</button>-->
-					
-                    
-                </td>
-                <td>{{task.name}}</td>
-                <td>{{task.status}}</td>
-                <td>{{task.requester}}</td>
-                <td>{{task.reviewer}}</td>
-                <td>{{task.initDT }}</td>
-
-
-            </tr>
-          
-        </tbody>
-    </table>
+<div *ngIf="isFull" class="">
+		
+		
+			<div class="panel panel-default" id="dashID" >
+				<table  class="table table-striped" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable"
+					 [(mfSortBy)]="sortBy" [(mfSortOrder)]="sortOrder">
+                	<thead>
+					<tr colspan="5">
+								
+					</tr>
+					<tr>
+						<th style="width: 10%">
+							<mfDefaultSorter by="id">Id</mfDefaultSorter>
+						</th>
+						<th style="width: 20%">
+							<mfDefaultSorter by="name">Name</mfDefaultSorter>
+						</th>
+						<th style="width: 20%">
+							<mfDefaultSorter by="status">Status</mfDefaultSorter>
+						</th>
+						<th style="width: 20%">
+							<mfDefaultSorter by="requester">Requester</mfDefaultSorter>
+						</th>
+						<th style="width: 20%">
+							<mfDefaultSorter by="reviewer">Reviewer</mfDefaultSorter>
+						</th>
+						<th style="width: 10%">
+							<mfDefaultSorter by="initDT">Initiated</mfDefaultSorter>
+						</th>
+						<th>
+							<mfDefaultSorter by="bdrationaled">Executive Summary of Service</mfDefaultSorter>
+						</th>
+					</tr>
+					<tr style="display:none">
+						<th colspan="5">
+							Filter by name:
+							<input class="form-control" [(ngModel)]="filterQuery"/>
+						</th>
+					</tr>
+					</thead>
+                	<tbody>
+					<tr *ngFor="let item of mf.data">
+						<td><h2><span class="label " >
+							<a   [routerLink]="[routerUrl,item.id]" *ngIf="item.isRegForm">{{item.id}}</a>
+							<a    href="{{rootUrl+item.nameurl}}" *ngIf="!item.isRegForm">{{item.id}}</a></span></h2></td>
+							
+							
+						<td>{{item.name}}</td>
+						<td>{{item.status}}</td>
+						<td>{{item.requester}}</td>
+						<td>{{item.reviewer}}</td>
+						<td>{{item.initDT}}</td>
+						<td>{{item.bdrationaled}}</td>
+						
+						
+					</tr>
+					</tbody>
+					<tfoot>
+					<tr style="display:none">
+						<td colspan="5">
+								<mfBootstrapPaginator [rowsOnPageSet]="[100,200,300]"></mfBootstrapPaginator>
+						</td>
+					</tr>
+					</tfoot>
+				</table>
+		</div>
 
 </div>
+
 
 <div id="graphId" style="display:none">
 	<div class="input-group-btn">
@@ -158,11 +211,13 @@
 		  
 		</div>
 
-	<svg width="1200" height="500" id="mysvg"></svg>
+	<svg width="1200" height="500" id="mysvg" style="display:none"></svg>
 		
 </div>
 <script type="text/javascript">
 
+
+	
  
 </script><html xmlns:mso="urn:schemas-microsoft-com:office:office" xmlns:msdt="uuid:C2F41010-65B3-11d1-A29F-00AA00C14882"><head>
 <!--[if gte mso 9]><xml>

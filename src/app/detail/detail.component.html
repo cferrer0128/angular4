@@ -1,3 +1,882 @@
-<p>
-  detail works!
-</p>
+
+<ul class="nav nav-pills nav-justified" *ngIf="isReady" style="height:50px">
+    <li class="active"  *ngIf="!isNew"><a data-toggle="pill" href="#project">Project {{localProject.id}}</a></li>
+	 	<li class="active" *ngIf="isNew"><a data-toggle="pill" href="#project">Project ({{localProject.name}})</a></li>
+		<li *ngIf="!isNew"><a data-toggle="pill" href="#doc">Documents</a></li>
+		<li *ngIf="isNew"><a data-toggle="pill" href="#supplier">Supplier</a></li>
+		<li *ngIf="isNew"><a data-toggle="pill" href="#people">People</a></li>
+		<li *ngIf="isNew"><a data-toggle="pill" href="#scope">Scopes</a></li>
+		<li *ngIf="isNew"><a data-toggle="pill" href="#dates">Dates</a></li>
+		<li *ngIf="isNew"><a data-toggle="pill" href="#vote">Vote</a></li>
+	
+</ul>
+<div class="tab-content" *ngIf="isReady">
+	<div class="alert alert-warning" role="alert" *ngIf="isFocus">
+				<strong>Warning!</strong> {{focusMessage}}.
+	</div>
+	<div class="alert alert-info saving" role="alert"  style="display:none" id="SavingId">
+   
+		<div  id="uploadSuccess" class="alert alert-info" role="alert"> <strong>Updating Record!</strong><img src="/_layouts/15/images/gears_anv4.gif"  height="20" width="20"></div>
+	</div>
+	<div class="alert alert-info" role="alert" id="SavedId" style="display:none">
+		<div  id="uploadSuccess" class="alert alert-info" role="alert"> <strong>done!</strong> Record updated Successfuly. </div>
+		<label class="control-label" style="margin-left: inherit;">Project Name: {{localProject.name}}</label>
+		<label name="RecordId" class="control-label" style="margin-left: inherit;">Project Id: {{localProject.id}}</label>
+	   
+		<h3 id="myReq" style="margin-top:auto;margin-right:5px;"><span class="label label-primary">
+		  <a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Close</i></a></span></h3>
+	  </div>
+    <div id="project" class="tab-pane fade in active">
+		<div class="input-group" style="width:380px">
+		
+			<div class="input-group-btn" *ngIf="!isSaved">
+				
+				<h3 id="myReq" style="margin-top:auto;margin-right:5px;"><span class="label label-success">
+					<a href="javascript:;" style="color: aliceblue;" (click)="goSaveProject()"><i class="glyphicon glyphicon-th-large">Register</i></a></span></h3>
+				
+			
+			</div>
+			<div class="input-group-btn" *ngIf="!isSaved">
+				
+				<h3 id="myReq" style="margin-top:auto;margin-right:10px; margin-left:10px"><span class="label label-danger">
+					<a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Cancel</i></a></span></h3>
+				
+			
+			</div>
+			<p style="color:brown">* - Mandatory Information</p>
+			
+		</div>			
+		<form class="form-horizontal" *ngIf="!isNew">
+			<table class="table">
+			<tr>
+			<td>
+					<div class="form-group">
+							<label class="control-label col-sm-3">Supplier Name:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control citi-class readyonly" placeholder="Supplier Name" [(ngModel)]="Supplier"  name="Supplier" value="{{localProject.name}}">
+							</div>
+						</div>
+						<div class="form-group" style="display:">
+							<label class="control-label col-sm-3" >New or Existing Supplier?</label>
+							<div class="col-sm-8">
+								<label class="control-label col-sm-6">Existing <input type="checkbox"  [(ngModel)]="ESupplier" name="ESupplier" (change)="changeValue($event.target)"></label>
+								<label class="control-label col-sm-6">New <input type="checkbox"  [(ngModel)]="NewSupplier" name="NewSupplier" (change)="changeValue($event.target)"></label>
+								
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3">Product Name:</label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control citi-class readyonly"  [(ngModel)]="Product" 
+								name="Product" value="{{localProject.productName}}">
+							</div>
+						</div>		  
+						<div class="form-group">
+							<label class="control-label col-sm-3">Sector Name:</label>
+							<div class="col-sm-9">
+									<input type="text" class="form-control citi-class readyonly"  [(ngModel)]="sector" name="sector" value="{{localProject.sector}}" >
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3">Business Unit:</label>
+							<div class="col-sm-9">
+							
+								<input  type="text" class="form-control citi-class readyonly"  [(ngModel)]="BusinessUnit" name="BusinessUnit" value="{{localProject.businessUnit}}">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3">Information Classification:</label>
+							<div class="col-sm-9">
+								
+								<select class="form-control citi-class"  [(ngModel)]="Dataclassi" name="Dataclassi" (change)="changeValue($event.target)" >
+										
+										<option *ngFor="let dataclassi of dataClassiList"  value="{{dataclassi.Title}}">{{dataclassi.Title}}</option>
+								</select> 	
+							</div>
+						</div>
+						<div class="form-group" >
+							<label class="control-label col-sm-3 " for="peoplePickerDivBISO">BISO <p style="color: brown;margin-top: -20px;margin-right: -10px;">*</p></label>
+							<div class="col-sm-9" >
+								<div class="input-group">
+									<div  id="peoplePickerDivBISO" >
+										
+											<input type="text" class="form-control citi-class mandatory" 
+											name="BISO" id="BISOId" 
+											placeholder="Enter BISO Name "  
+											onfocus="showPeople(this,'peoplePickerDivBISO',false)" value="{{localProject.BISO_x0020_RO}}" >
+										
+									</div>
+									<div class="input-group-addon">
+											<span class="glyphicon glyphicon-user"></span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						<div class="form-group" >
+							<label class="control-label col-sm-3" >Contract Renewal:</label>
+							<div class="col-sm-8">
+								<label class="control-label col-sm-6">Yes <input type="checkbox" [(ngModel)]="ContractChkYes" name="ContractChkYes" (change)="changeValue($event.target)"></label>
+								<label class="control-label col-sm-6">No <input type="checkbox" [(ngModel)]="ContractChkNo" name="ContractChkNo" (change)="changeValue($event.target)"></label>
+								
+							</div>
+						</div>
+				
+						<div class="form-group" >
+							<label class="control-label col-sm-3" >Application Change?</label>
+							<div class="col-sm-8">
+								<label class="control-label col-sm-6">Yes <input type="checkbox" [(ngModel)]="AppChkYes" name="AppChkYes" (change)="changeValue($event.target)"></label>
+								<label class="control-label col-sm-6">No <input type="checkbox" [(ngModel)]="AppChkNo" name="AppChkNo" (change)="changeValue($event.target)"></label>
+								
+							</div>
+						</div>     
+					
+						<div class="form-group" >
+							<label class="control-label col-sm-3" >KPMG Audit?</label>
+							<div class="col-sm-8">
+								<label class="control-label col-sm-6">Yes <input type="checkbox" [(ngModel)]="KPMGChkYes" name="KPMGChkYes" (change)="changeValue($event.target)" ></label>
+								<label class="control-label col-sm-6">No <input type="checkbox" [(ngModel)]="KPMGChkNo" name="KPMGChkNo" (change)="changeValue($event.target)"></label>
+								
+							</div>
+						</div>
+	
+						<div class="form-group" >
+								<label class="control-label col-sm-3" >Citi SOX Indicator?</label>
+								<div class="col-sm-8">
+									<label class="control-label col-sm-6">SOX-critical <input type="checkbox" [(ngModel)]="SOXChkNo" name="SOXChkNo" (change)="changeValue($event.target)"></label>
+									<label class="control-label col-sm-6">Not SOX-critical <input type="checkbox" [(ngModel)]="SOXChkYes" name="SOXChkYes" (change)="changeValue($event.target)" ></label>
+									
+								</div>
+						</div>
+	
+						<div class="form-group">
+							<label class="control-label col-sm-3">IS Risk:</label>
+							<div class="col-sm-9">
+								<select class="form-control citi-class"  
+								[(ngModel)]="IsRisk" name="IsRisk" >
+								
+									<option *ngFor="let risk of dataRiskList"  value="{{risk.Title}}">{{risk.Title}}</option>
+	
+								</select> 
+							</div>
+						</div>
+					
+					<div class="panel panel-default" style="width: 550px;margin-left: auto;">
+							<div class="panel-heading">Hosting Provider Information</div>
+						
+						<div class="form-group" style="margin-top: 10px;">
+								<label class="control-label col-sm-4 ">Hosting Provider:</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control citi-class " placeholder="Hosting Provider" [(ngModel)]="HMethod" name="HMethod">
+								</div>
+							</div>
+											 
+						<div class="form-group"  style="margin-top: 10px;">
+							<label class="control-label col-sm-4 ">Primary Site Location <p style="color: brown;margin-top: -20px;margin-right: -10px;">*</p></label>
+							<div class="col-sm-7">
+								<input type="text"  class="form-control citi-class mandatory" placeholder="Primary Site Location" [(ngModel)]="PSiteLoc" name="PSiteLoc">
+							</div>
+						</div>
+						<div class="form-group" style="margin-top: -14px;">
+							<label class="control-label col-sm-4 ">Secondary Site Location <p style="color: brown;margin-top: -20px;margin-right: -10px;">*</p></label>
+							<div class="col-sm-7">
+								<input type="text"  class="form-control citi-class  mandatory" placeholder="Secondary Site Location" [(ngModel)]="SSiteLoc" name="SSiteLoc">
+							</div>
+						</div>
+						<div class="form-group" style="margin-top: -15px;">
+							<label class="control-label col-sm-4 ">Access Method <p style="color: brown;margin-top: -20px;margin-right: -10px;">*</p></label>
+							<div class="col-sm-7">
+								
+								<select class="form-control"  
+								[(ngModel)]="AMethod" name="AMethod" >
+								
+									<option *ngFor="let AMItem of AccessMethodList"  value="{{AMItem.Title}}">{{AMItem.Title}}</option>
+	
+								</select> 
+							</div>
+						</div>
+						 
+		
+						</div>
+			</td>
+			<td>
+					<div class="form-group">
+							<label class="control-label col-sm-3 ">CSI: </label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control citi-class" placeholder="CSI Id"
+								[(ngModel)]="CSI" name="CSI"  maxlength="6">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 ">CTC: </label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control citi-class" placeholder="CTC Id" maxlength="5" 
+								[(ngModel)]="CTC" name="CTC">
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3 ">Go Live date <p style="color: brown;margin-top: -20px;margin-right: -10px;">*</p></label>
+							<div class="col-sm-7">
+								<div class="input-group date" data-provide="datepicker" >
+			
+									<input type="text" class="form-control mandatory" placeholder="Go Live Date" maxlength="10"
+									[(ngModel)]="golivedate" name="golivedate"   
+									(focus)="changeDateValue($event.target.value)" (focusout)="changeDateValue($event.target.value)">
+									<div class="input-group-addon" style="display:none">
+										<span class="glyphicon glyphicon-th"></span>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+										
+						<div class="form-group" >
+							<label class="control-label col-sm-3 " for="peoplePickerDivRequester">Requester:</label>
+							<div class="col-sm-7">
+								<div class="input-group">
+									<div  id="peoplePickerDivRequester" >
+										
+									<input type="text"  class="form-control citi-class " placeholder="Enter Requester Name"  
+										onfocus="showPeople(this,'peoplePickerDivRequester',false)" id="RequesterId"
+										name="Requester" value="{{Requester}}">
+										
+									</div>
+									<div class="input-group-addon">
+											<span class="glyphicon glyphicon-user"></span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+		
+						<div class="form-group" >
+							<label class="control-label col-sm-3 " for="peoplePickerDivRT">Requester Team:</label>
+							<div class="col-sm-7">
+								<div class="input-group">
+									<div  id="peoplePickerDivRT" >
+										
+											<input type="text" class="form-control citi-class "  
+											placeholder="Enter Requester Team "  id="ReqTeamId"
+											name="RequesterTeam" [(ngModel)] = "RequesterTeam"
+											onfocus="showPeople(this,'peoplePickerDivRT',true)">
+										
+									</div>
+									<div class="input-group-addon">
+											<span class="glyphicon glyphicon-user"></span>
+									</div>
+								</div>
+							</div>
+							
+						</div>
+						
+						<div class="form-group">
+							<label class="control-label col-sm-3">Type of Request:</label>
+							<div class="col-sm-7">
+								<select class="form-control citi-class"  
+								[(ngModel)]="TypeOfReq" name="TypeOfReq" (change)="changeValue($event.target.value)" >
+									
+									<option *ngFor="let datatypeofreq of dataTypeOfReqList"  value="{{datatypeofreq.Title}}">{{datatypeofreq.Title}}</option>
+							</select> 
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="control-label col-sm-3">Type of Service:</label>
+							<div class="col-sm-7">
+								<select class="form-control citi-class"  [(ngModel)]="TypeOfServ" name="TypeOfServ"  >
+								
+								<option *ngFor="let serv of typeOfServices"  value="{{serv.Title}}">{{serv.Title}}</option>
+								
+								</select> 
+							</div>
+						</div>
+						
+						
+		
+							<div class="form-group" style="display:none">
+								<label class="control-label col-sm-3" >Approval Renewal for Year:</label>
+								
+								<div class="col-sm-7">
+									<select class="form-control citi-class" 
+									 [(ngModel)]="AppRepYear" name="AppRepYear">
+										
+										<option *ngFor="let dataYear of dataYearsList"  value="{{dataYear.Title}}">{{dataYear.Title}}</option>
+								</select> 
+								</div>
+						</div>
+						<div class="form-group" >
+							<label class="control-label col-sm-3" >Executive Summary of Service:</label>
+							
+							<div class="col-sm-7">
+								<textarea rows="4" cols="50" style="width:100%;height:150px" [(ngModel)]="ReqDescription" name="ReqDescription"></textarea>
+								
+							</div>
+						</div>
+					 
+						<div class="panel panel-danger" style="width: fit-content;margin-left: 292px;" *ngIf="isInGroup">
+								<div class="panel-heading">Reviewer Information</div>
+								<div class="form-group" style="display:">
+										<label class="control-label col-sm-3" >Designated External Application:</label>
+										<div class="col-sm-8">
+											<label class="control-label col-sm-6">Sector CART Request <input type="checkbox" [(ngModel)]="CartSectChkYes" name="CartSectChkYes" (change)="changeValue($event.target)"></label>
+											<label class="control-label col-sm-6">Global CART Request <input type="checkbox"  [(ngModel)]="CartSectChkNo" name="CartSectChkNo" (change)="changeValue($event.target)"></label>
+											
+										</div>
+								</div>
+								<div class="form-group" >
+									<label class="control-label col-sm-3" style="margin-left: -5px;">Engagement Meeting Minutes :</label>
+									
+									<div class="col-sm-9">
+										<textarea rows="4" cols="50" style="width:100%;height:150px" [(ngModel)]="EngaMetMinute" name="EngaMetMinute"></textarea>
+										
+									</div>
+								</div>
+						</div>
+			</td>
+			<td style="width: 350px;" style="display:none" id="ApprovalId">
+				
+				<div class="panel panel-default">
+					<div class="panel-heading">Approvals (check box when done)</div>
+					  
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >Biso Data Classification:</label>
+					  <div class="col-sm-6">
+						  <select class="form-control citi-class"  
+						  	name="BisoDataClassi" readyonly>
+							<option value="NotStarted">Not Started</option>
+							<option value="Completed">Completed</option>
+						  
+						  </select> 
+						 
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="BisoDataClassiDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >ESC/ Sourcing:</label>
+					  <div class="col-sm-6">
+						<select class="form-control citi-class"  
+							name="ESCSourcing" readyonly>
+						  <option value="NotStarted">Not Started</option>
+						  <option value="Completed">Completed</option>
+						
+						</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text"  class="form-control" placeholder="Not Started" 
+							  name="ESCSourcingDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >TPU:</label>
+					  <div class="col-sm-6">
+						<select class="form-control citi-class"  
+							name="TPU" readyonly>
+						  <option value="NotStarted">Not Started</option>
+						  <option value="Completed">Completed</option>
+						
+						</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="TPUDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >Budget Approval:</label>
+					  <div class="col-sm-6">
+							<select class="form-control citi-class"  
+							name="BudApp" readyonly>
+							<option value="NotStarted">Not Started</option>
+							<option value="Completed">Completed</option>
+							
+							</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="BudAppDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					  </div>
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >Sector Architect:</label>
+					  <div class="col-sm-6">
+							<select class="form-control citi-class"  
+							name="SectorArch" readyonly>
+							<option value="NotStarted">Not Started</option>
+							<option value="Completed">Completed</option>
+							
+							</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="SectorArchDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+				  </div>
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >Technology Management:</label>
+					  <div class="col-sm-6">
+							<select class="form-control citi-class"  
+								name="TechMgm" readyonly>
+								<option value="NotStarted">Not Started</option>
+								<option value="Completed">Completed</option>
+							
+							</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="TechMgmDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+				 
+				  </div>
+				  <div class="panel panel-primary">
+					<div class="panel-heading">Provide evidence for the following  tasks (check box when done)</div>
+					  
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >Product Privacy Compliance Review:</label>
+					  <div class="col-sm-6">
+						<select class="form-control citi-class"  
+						name="DataPrivacy" readyonly>
+						<option value="NotStarted">Not Started</option>
+						<option value="Completed">Completed</option>
+					
+					</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="DataPrivacyDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+
+					<div class="form-group" >
+					  <label class="control-label col-sm-6 " >CoB Program Operations:</label>
+					  <div class="col-sm-6">
+						<select class="form-control citi-class"  
+							name="CoB" readyonly>
+							<option value="NotStarted">Not Started</option>
+							<option value="Completed">Completed</option>
+					
+						</select>
+						
+						  <div class="input-group date"  style="width:100%;margin-top:3px">
+							
+							  <input type="text" class="form-control" placeholder="Not Started" 
+							  name="CoBDT" readonly>
+							  <div class="input-group-addon">
+								<span class="glyphicon glyphicon-th"></span>
+							  </div>
+						  </div>
+					  </div>
+					</div>
+		  
+				  </div>
+				
+			</td>
+			</tr>
+		
+		
+			</table>
+		</form>			
+			
+	<!-- foot actions-->	
+	
+	<div class="input-group" style="width:380px">
+		
+		<div class="input-group-btn" *ngIf="!isSaved">
+			
+			<h3 id="myReq" style="margin-top:auto;margin-right:5px;"><span class="label label-success">
+				<a href="javascript:;" style="color: aliceblue;" (click)="goSaveProject()"><i class="glyphicon glyphicon-th-large">Register</i></a></span></h3>
+			
+		
+		</div>
+		<div class="input-group-btn" *ngIf="!isSaved">
+			
+			<h3 id="myReq" style="margin-top:auto;margin-right:10px;margin-left:10px"><span class="label label-danger">
+				<a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Cancel</i></a></span></h3>
+			
+		
+		</div>
+		<p style="color: brown;">* - Mandatory Information</p>
+				
+	</div>
+
+	<div class="alert alert-info saving" role="alert"  style="display:none" id="SavingId">
+   
+			<div  id="uploadSuccess" class="alert alert-info" role="alert"> <strong>Updating Record!</strong><img src="/_layouts/15/images/gears_anv4.gif"  height="20" width="20"></div>
+	</div>
+
+	</div>
+	<!-- supplier-->
+	<div id="supplier"  class="tab-pane fade">
+		<form class="form-horizontal" >
+				<table class="table">
+					<tr>
+						<td>
+								<div class="form-group">
+									<label class="control-label col-sm-3 ">Supplier Name:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"   readonly="true" value="{{supplier}}" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-3">New or Existent:</label>
+									<div class="col-sm-9">
+										<select class="form-control citi-class"  [(ngModel)]="key" name="key" (change)="changeValue($event.target.value)" >
+											
+											<option *ngFor="let sector of sectorList"  value="{{sector.key}}">{{sector.key}}</option>
+											
+											</select>
+									</div>
+								</div>		  
+								<div class="form-group">
+									<label class="control-label col-sm-3">Contact Name:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"  name="ContactName" [(ngModel)]="ContactName" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-3">Contact Email:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"  name="ContactEmail" [(ngModel)]="ContactEmail" >
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-3">Contact Phone:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"  name="ContactPhone" [(ngModel)]="ContactPhone" >
+									</div>
+								</div>
+						</td>
+						<td>
+								<div class="form-group">
+									<label class="control-label col-sm-3">Type of Service:</label>
+									<div class="col-sm-9">
+										<select class="form-control citi-class"  [(ngModel)]="TypeOfServ" name="TypeOfServ"  >
+										
+										<option *ngFor="let bu of businessUList"  value="{{bu.BusinessUnit}}">{{bu.BusinessUnit}}</option>
+										
+										</select> 
+									</div>
+								</div>
+								<div class="form-group">
+										<label class="control-label col-sm-3">Access Method:</label>
+										<div class="col-sm-9">
+											<select class="form-control citi-class"  [(ngModel)]="AccessMethod" name="AccessMethod" >
+											
+											<option *ngFor="let bu of businessUList"  value="{{bu.BusinessUnit}}">{{bu.BusinessUnit}}</option>
+											
+											</select> 
+										</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label col-sm-3">Access Method Description:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"  name="AccessMDesc" [(ngModel)]="AccessMDesc" >
+									</div>
+								</div>
+								<div class="form-group" >
+									<label class="control-label col-sm-3">User Base:</label>
+										<div class="col-sm-9">
+											<select class="form-control citi-class"  [(ngModel)]="UserBase" name="UserBase" >
+											
+											<option *ngFor="let bu of businessUList"  value="{{bu.BusinessUnit}}">{{bu.BusinessUnit}}</option>
+											
+											</select> 
+										</div>
+									
+								</div>
+													
+								<div class="form-group" >
+									<label class="control-label col-sm-3">User Base Description:</label>
+									<div class="col-sm-9">
+										<input type="text" class="form-control citi-class"  name="UserBaseDesc" [(ngModel)]="UserBaseDesc" >
+									</div>
+								</div>
+							
+						</td>
+						<td>
+						
+							<div class="form-group">
+										<label class="control-label col-sm-3">Hosting Provider:</label>
+										<div class="col-sm-9">
+											 <input type="text" class="form-control citi-class" placeholder="Hosting Provider" [(ngModel)]="HostingPro" name="HostingPro"
+											   (change)="textChange($event.target)">
+										</div>
+							</div>
+							<div class="form-group">
+									<label class="control-label col-sm-3">Brief Description Of Hosting 4th Party:</label>
+									<div class="col-sm-9">
+										<textarea   class="form-control citi-class"  name="AccessMDesc" [(ngModel)]="AccessMDesc"></textarea>
+									</div>
+							</div>
+							
+						</td>
+					</tr>
+					<tr>
+						<td style="border-top: 0px solid;" colspan="2">
+							
+						</td>
+					</tr>
+					
+				</table>
+			</form>
+	</div>
+	<!-- doc-->
+	<div id="doc" class="tab-pane fade">
+      
+				<table  class="table table-striped">
+					<thead>
+					<tr colspan="5">
+						<div class="panel-heading"><strong>Records: {{fileList?fileList.length:0}}</strong></div>		
+					</tr>
+					<tr>
+					
+						<th style="width: 20%">
+							Name
+						</th>
+						<th style="width: 20%">
+							Open Document
+						</th>
+						<th style="width: 20%">
+						Type Of Document
+						</th>
+						<th style="width: 10%">
+							Date
+						</th>
+						
+					</tr>
+				
+					</thead>
+                	<tbody>
+					<tr *ngFor="let item of fileList">
+						<td>
+								<img border="0" width="16" height="16" src="/_layouts/15/images/ic{{item.extFile}}.png">{{item.Title}}
+						</td>
+					
+						<td>
+								
+									<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="{{item.linkToFile}}">
+										<i class="glyphicons-more-items">Open</i></a>
+						</td>
+						<td>
+								<a target="_self" style="text-decoration: underline; margin-bottom: 4px;" href="{{item.fileEditUrl}}">
+										<i class="glyphicons-more-items">{{item.cartCategory}}</i></a>
+							</td>
+						<td>{{item.TimeCreated}}</td>
+						
+				
+						
+					</tr>
+					</tbody>
+					
+				</table>
+				<div class="modal-dialog">
+
+					<!-- Modal content-->
+					<div class="modal-content">
+					  <div class="modal-header">
+							<h4 class="modal-title">Upload Documents</h4>
+							<p *ngIf="isReady">Project Name: {{localProject.name}} Project Id: {{localProject.id}}</p>
+							<p id="uploadFileId" style="display:none">{{localProject.name}}</p>
+							
+							<div style="display:none" *ngIf="isReady" id="uploadSuccess" class="alert alert-info" role="alert"> <strong>done!</strong> File updaloed Successfuly {{newFileName}}. </div>
+							<div style="display:none" *ngIf="isReady" id="uploadWarning" class="alert alert-warning" role="alert"> <strong>Warning!</strong> File cannot be emtpy. </div>
+							<div style="display:none" *ngIf="isReady" id="uploadDanger" class="alert alert-warning" role="alert"> <strong>Error!</strong> File could not be uploaded {{newFileName}}. </div>
+					  </div>
+					  <div class="modal-body">
+							<div class="input-group" style="width:350px">
+								<input type="file" class="form-control" placeholder="Upload File" id="getFile">
+								<div class="input-group-btn">
+									<button class="btn btn-info"  type="button" onclick="uploadFile()" id="btnFile" >
+										<i class="glyphicon glyphicon-book" name="uploadName">Upload</i>
+									</button>
+								</div>
+							</div>
+				
+						</div>
+					
+					</div>
+				
+				  </div>
+				<button type="button" class="btn btn-primary" onclick="showUpload()" style="display:none">Upload Documents</button>
+	</div>
+	<!-- People-->
+	<div id="people" class="tab-pane fade">
+		<h3>People</h3>
+		<p>Some content in People.</p>
+	</div> 
+	<!-- scope-->
+	<div id="scope" class="tab-pane fade">
+        <h3>Scope</h3>
+        <p>Some content in Scope.</p>
+	
+	</div>
+	 <!-- Dates-->
+	<div id="dates" class="tab-pane fade">
+		<h3>dates</h3>
+        <p>Some content in dates.</p>
+	</div>
+	<!-- vote-->
+	<div id="vote"  class="tab-pane fade">
+		<div class="panel panel-primary">
+				<div class="panel-heading">Please cast your Vote (Click Save when you done)</div>
+				<div class="panel-body">
+						<label class="control-label col-sm-2">Type of Vote:</label>
+						<div class="col-sm-5">
+						  <select class="form-control citi-class"  [(ngModel)]="typeofVote" name="typeofVote" (change)="changeVote($event.target)">
+						
+						  <option *ngFor="let vote of voteList"  value="{{vote.key}}">{{vote.key}}</option>
+						  
+						  </select> 
+						</div>
+						<div class="progress" *ngIf="isApproved">
+							<div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+							{{progBarValue}} (success)
+						  </div>
+						</div>
+						<div class="progress" *ngIf="isInfo">
+							<div class="progress-bar progress-bar-info progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+							{{progBarValue}} (success)
+						  </div>
+						</div>
+						<div class="progress" *ngIf="isRejected">
+							<div class="progress-bar progress-bar-danger progress-bar-striped" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+							{{progBarValue}} (success)
+						  </div>
+						</div>
+				</div>
+				<div class="panel-body" *ngIf="isUserReq">
+						<label class="control-label col-sm-2">Reply to:</label>
+						<div class="col-sm-5">
+						  <select class="form-control citi-class"  [(ngModel)]="replyVote" name="replyVote"  >
+						  	<option value="00">Select</option>
+						  	<option *ngFor="let reply of arrReplayTo"  value="{{reply.Id}}">{{reply.CARTApprovalName}}</option>
+						  
+						  </select> 
+						</div>
+				</div>
+				<div class="panel-body" >
+						<label class="control-label col-sm-2" >Comments</label>
+						
+						<div class="col-sm-5">
+						  <textarea rows="4" cols="50" style="width:100%" [(ngModel)]="VoteComment" 
+						  name="VoteComment"></textarea>
+						  
+						</div>
+				</div>
+		</div>
+		<div class="panel panel-info" style="background-color:#ebf3f5">
+			<div class="panel-heading" style="background-color:#42c0da;color:#fff">Voting process(Reviewers can vote and Request Information)</div>
+			<div class="media" *ngFor="let vote of superArray">
+					<div class="media-left">
+						<img src="/_layouts/15/images/person.gif?rev=23" class="media-object" style="width:45px">
+					</div>
+					<div class="media-body">
+						<h4 class="media-heading">{{vote.CARTApprovalName}}<small><i> Posted on {{vote.Created}}</i></small></h4>
+						<p>{{vote.CARTApprovalVote}}</p>
+						<p>{{vote.CARTApprovalNote}}</p>
+						<!-- Nested media object -->
+						<div class="media" *ngFor="let child of vote.Children">
+							<div class="media-left">
+								<img src="/_layouts/15/images/person.gif?rev=23" class="media-object" style="width:45px">
+							</div>
+							<div class="media-body">
+								<h4 class="media-heading">{{child.CARTApprovalName}}<small><i> Posted on {{child.Created}}</i></small></h4>
+								<p>{{child.CARTApprovalVote}}</p>
+								<p>{{child.CARTApprovalNote}}</p>
+
+							</div>
+							
+							
+						
+						</div>
+
+					</div>
+
+				</div>
+			
+				<!-- Nested media object -->    
+				
+
+		</div>
+		
+
+	</div>
+	
+
+</div>
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Upload Documents</h4>
+				<p id="uploadFileId" *ngIf="isReady">{{localProject.name}}</p>
+				<p id="FileId" *ngIf="isReady">{{localProject.id}}</p>
+		
+				<div style="display:none" *ngIf="isReady" id="uploadSuccess" class="alert alert-info" role="alert"> <strong>done!</strong> File updaloed Successfuly {{newFileName}}. </div>
+				<div style="display:none" *ngIf="isReady" id="uploadWarning" class="alert alert-warning" role="alert"> <strong>Warning!</strong> File cannot be emtpy. </div>
+				<div style="display:none" *ngIf="isReady" id="uploadDanger" class="alert alert-warning" role="alert"> <strong>Error!</strong> File could not be uploaded {{newFileName}}. </div>
+					
+	  </div>
+      <div class="modal-body">
+				<div class="input-group" style="width:350px">
+					<input type="file" class="form-control" placeholder="Upload File" id="getFile">
+					<div class="input-group-btn">
+						<button class="btn btn-info"  type="button" onclick="uploadFile()" id="btnFile" >
+						<i class="glyphicon glyphicon-book">Upload</i>
+						</button>
+					
+					</div>
+				</div>
+
+			</div>
+			
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" (click)="fileUploaded()">Close</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+

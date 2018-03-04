@@ -10,25 +10,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   
-  <SharePoint:ScriptLink name="clienttemplates.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="clientforms.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="clientpeoplepicker.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="autofill.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="sp.RequestExecutor.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="sp.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="sp.runtime.js" runat="server" LoadAfterUI="true" Localizable="false" />
-  <SharePoint:ScriptLink name="sp.core.js" runat="server" LoadAfterUI="true" Localizable="false" />
+  
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
 
- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   
-<!-- Add your CSS styles to the following file      -->
+    <!-- Add your CSS styles to the following file      -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   
-    <!-- Add your JavaScript to the following file -->
+    <!-- Add your JavaScript to the following file -- sites/dev ---- sandbox/cart-->
     
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
 		
@@ -36,8 +29,17 @@
 	<link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" rel="Stylesheet" type="text/css">
 	
 	
-	<script src="//d3js.org/d3.v4.min.js"></script>
+    <!-- Add your Ui Jquery  
+        <script src="//code.jquery.com/jquery-1.12.4.js">
+    
+        <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css"/>
+    
+        <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+    </script>-->
+   
+
+    <script src="//d3js.org/d3.v4.min.js"></script>
 
     <script src="/sites/dev/JavascriptFiles/dimple.v2.3.0.min.js"></script>
 	
@@ -50,123 +52,406 @@
 		var isMonth;
 		var isDays;
 		var isChange=false;
-       var routeURL="sites/dev/SitePages/a4page.aspx/dash";
-       var localURL="/sites/dev";
+        var routeURL=_spPageContextInfo.serverRequestPath;
+        var digest = document.getElementById('__REQUESTDIGEST').value;
+        var userId = _spPageContextInfo.userId;
+        var spSite = _spPageContextInfo.webAbsoluteUrl;
+        var spGroups = ['Approvers00','Reviewers00','dev Visitors00']
+        var listUrl = _spPageContextInfo.listUrl;
+        var siteServerRelativeUrl = _spPageContextInfo.siteServerRelativeUrl
+        var topApi=700;
         ExecuteOrDelayUntilScriptLoaded(function () {
          
+
         }, "sp.js");
 
 
-        
+        function goSummary(){
+            document.getElementById('dashID').style.display='none';
+            document.getElementById('dashDiv').style.display='';
+            document.getElementById('summaryTable').style.display='';
+            
+            document.getElementById('tableHeader').style.width='70%';
+
+            isPie=false;isBar=true;isMonth=true;showBarGraph();
+        }
+        function onDashboard(){
+            document.getElementById('dashID').style.display='';
+            document.getElementById('dashDiv').style.display='none';
+            document.getElementById('summaryTable').style.display='none'
+            document.getElementById('tableHeader').style.width='100%';
+        }
 
         // Load the required SharePoint libraries
         $(document).ready(function () {
+            //input,div[title]
+
+            $('[data-toggle="tooltip"]').tooltip(); 
+            
+            /* 
+                    $('.myRight').tooltip({
+                        
+                        hide: { effect: "blind", duration: 100 },
+                        position: { my: "left+10 center", at: "right center" }
+                     });
+
+                    $('.myLeft').tooltip({
+                        
+                    hide: { effect: "blind", duration: 100 },
+                    position: { my: "right+10 center", at: "right center" }
+                    });
+
+            */
+           
             //Get the URI decoded URLs.
             //$('#DeltaPlaceHolderPageTitleInTitleArea').css('display','none');
             // resources are in URLs in the form:
+
             // web_url/_layouts/15/resource
+            digest = jQuery("#__REQUESTDIGEST").val();
+            
             var scriptbase =  "/_layouts/15/";
             // Load the js files and continue to the successHandler
 			
             $.getScript(scriptbase + "SP.RequestExecutor.js", function(){
-				console.log('done with SP.RequestExecutor ');
+                console.log('done with SP.RequestExecutor ');
+                $.getScript(scriptbase + "clientpeoplepicker.js", function(){
+                    console.log('done with clientpeoplepicker ');
+                })
 				
 			});
 			//
 			
-			
-			
         });
 	
 //getting DOM ready...
-	isDatePic = false;
+    isDatePic = false;
+    option= '';
+    var BISOId='';
+    var RequesterId='';
+    var ReqTeamId='';
+    var ReqTeamIDs='';
+    var isAll=false;
+    var RecordSaved=false;
+    var onerrorFlag="";
+    var golivedate;
+
+    
 	setInterval(function(){
    		
    			$(document).ready(function () {
-				//if(!isDatePic){
-						//isDatePic=true;
-						//$('.datepicker').datepicker();
-								
-						//$('.dropdown-toggle').dropdown();
-						
-					//}
-					//for graphic....
+                
+                    $('#peoplePickerDivBISO_TopSpan div').each(function(){
+                                    
+                            console.log('html value ', $(this)[0])
+                        if($(this)[0]) $(this)[0].removeAttribute('title');
+                    });
+                    $('.sp-peoplepicker-editorInput').each(function(){
+                            
+                                console.log('html value ', $(this)[0])
+                            if($(this)[0]) $(this)[0].removeAttribute('title');
+                    });
+                   
+
 					if(isChange==true){ 
-						console.log('time to change Graph'); 
+                        console.log('time to change Graph'); 
+                        //$('#idSearching').css('display','');
+                        if($('#H3newReq'))   $('#H3newReq').css('display','');
 						isChange = false;
 						if(isPie)showGraph();else if(isBar)showBarGraph(); 
 						
-					}
+                    }
+                    $('#peoplePickerDivRT_TopSpan input').each(function(){
+
+                        //console.log('value  ', $(this).val() );
+                        if($(this).val().length>0)  ReqTeamIDs = $(this).val();
+
+                    });
+                    $('#peoplePickerDivRequester_TopSpan input').each(function(){
+                        
+                        //console.log('value  ', $(this).val() );
+                        if($(this).val().length>0)  RequesterId = $(this).val();
+
+                    });
+
+                    $('#peoplePickerDivBISO_TopSpan input').each(function(){
+                        
+                        //console.log('value  ', $(this).val() );
+                        if($(this).val().length>0)  BISOId = $(this).val();
+
+                    });
+                    //
+                                       
+
+                    $('.mandatory').each(function(){
+                       
+						if($(this)[0] && $(this)[0].value.length<=0){
+                            //console.log('html value ', $(this)[0].placeholder)
+                            //golivedate
+                            focusMessage = "Please complete this record " + $(this)[0].placeholder;
+                            return false;
+                        }else focusMessage ="";
+                        
+                       
+                    });
+                    
+                    $('.readyonly').each(function(){
+                        $(this).attr("readonly","true");
+                        
+					
+                    });
+
+                    //record saved
+                    if(RecordSaved){
+                        
+                        $('.modal-backdrop').hide();
+                        RecordSaved = false;
+
+                    }
+                    if(isAll ==true){
+                        isAll = false
+                        $('select').each(function(){
+
+                            //console.log('Select loop ', $(this)[0][0].value);
+                            
+                            if($(this)[0][0] && $(this)[0][0].value =="All"){
+                                option = $(this)[0][0];
+                                option.removeAttribute("selected");
+                                option.setAttribute("selected","selected");
+                                
+                            }
+                            //NotStarted
+                            if($(this)[0][0] && $(this)[0][0].value =="NotStarted"){
+                                option = $(this)[0][0];
+                                option.removeAttribute("selected");
+                                option.setAttribute("selected","selected");
+                                
+                            }
+                            //replyVote
+                            if($(this)[0][0] && $(this)[0][0].value =="00"){
+                                option = $(this)[0][0];
+                                option.removeAttribute("selected");
+                                option.setAttribute("selected","selected");
+                                
+                            }
+                        })
+                        if($('#idSearch'))   $('#idSearch').removeAttr('disabled');
+                        if($('#idH4'))   $('#idH4').css('display','none');
+                        if($('#H3newReq'))   $('#H3newReq').css('display','');
+                        if($('#H3Grap'))   $('#H3Grap').css('display','none');
+                        if($('#myReq'))  $('#myReq').css('display','');                   
+                        if($('#idAll'))   $('#idAll').removeAttr('disabled');
+                        if($('#endDate'))   $('#endDate').removeAttr('disabled');
+                        if($('#initDate'))   $('#initDate').removeAttr('disabled');
+                        
+                        
+                    }
+                    
+                   
 	
 			});	
 	
    	}
-   	,1000);
+       ,1000);
+       
 // Upload the file.
+function setFocusMessage(xElement){
+
+    // onfocus="showPeople(this,'peoplePickerDivRequester',false)"
+
+    $('#displayMsg').css('display','');
+    $('#displayMsgId').html($(xElement).attr('toolTip'))
+
+
+ }
 // You can upload files up to 2 GB with the REST API.
+var xmlFile;
+var xmlItemPath='';
+var ProjectName='';
+var focusMessage='';
+var isError=false;
+ // Get the server URL.
+ var serverUrl = _spPageContextInfo.webAbsoluteUrl;
+ var folderPath='';
+function addNewFile(){
+    $('#msgID').css('display','none');
+    $("#myModalDlg").css('display','');
+    $('.saving').css('display','');
+    //$(".modal-backdrop.in").show();
+    //$('#myModal').modal('show');
+    var newDate = new Date();
+    newDate = newDate.getMinutes()+''+newDate.getSeconds();
+    ProjectName = $("[name='Sector']").val() +'-'+$("[name='Supplier']").val() + '-'+$("[name='Product']").val();
+    folderPath  = serverUrl+"/_api/Web/GetFileByServerRelativeUrl('/sites/dev/CARTProjects/"+ProjectName+".xml')/ListItemAllFields";
+    //calling folder function.....toolTip..$("[toolTip]")
+    if(focusMessage.length<=0 && 
+    $("[name='Sector']").length>0 && 
+    $("[name='Supplier']").length>0 && 
+    $("[name='golivedate']").length>0 && 
+    $("[name='Product']").length>0 && 
+    $("[name='PSiteLoc']").length>0 && 
+    $("[name='SSiteLoc']").length>0 && 
+    $("[name='AMethod']").length>0 &&
+    $("[name='CSI']").length>0 &&
+    $("[name='CTC']").length>0 && 
+    xmlItemPath.length<=0 &&
+    !isNaN($("[name='CSI']").val()) && 
+    !isNaN($("[name='CTC']").val()))
+    getListItem(folderPath).done(function(listItem, status, xhr){
+        $('#msgID').css('display','');
+        //$('#warningId').css('display','');
+        focusMessage = 'Error Project folder already exist, please try a new one';
+        onerrorFlag = 'Error Project folder already exist, please try a new one';;
+        $('.saving').css('display','none');
+    }).fail(function(){
+        
+        $('#footwarningId').css('display','none');
+        $('#warningId').css('display','none');
+        $('.saving').css('display','');
+
+        $('#msgID').css('display','none');
+        
+        console.log('folder does not exist ', ProjectName);
+        addFolfer(ProjectName)
+        .done(function(data){
+                  
+            uploadFile();
+        }).fail(function(){
+            console.log("Error addFolfer  ");
+           
+        });
+    });
+    
+    else{
+        $('#msgID').css('display','');
+    }
+
+}
+//getProjects...
+
+
+function addFolfer(fileName) {
+
+    //'body: { '__metadata': { 'type': 'SP.Folder' }, 'ServerRelativeUrl': '/document library relative url/folder name'}';
+    serverRelativeUrlToFolder =  'CARTDocs/'+fileName;
+    // Construct the endpoint.
+    var fileCollectionEndpoint = String.format(
+            "{0}/_api/web/folders/add('{1}')",
+            serverUrl,serverRelativeUrlToFolder);
+
+    ////var body = String.format("{{'__metadata':{{'type':'SP.Folder'}},'ServerRelativeUrl':'{1}'}}", newName, newName);
+    // Send the request and return the response.
+    // This call returns the SharePoint file.
+    return jQuery.ajax({
+        url: fileCollectionEndpoint,
+        type: "POST",
+        headers: {
+            "accept": "application/json;odata=verbose",
+            "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
+            
+        }
+    });
+
+
+}
+ // Get the list item that corresponds to the file by calling the file's ListItemAllFields property.
+ function getListItem(fileListItemUri) {
+
+    // Send the request and return the response.
+    return jQuery.ajax({
+        url: fileListItemUri,
+        type: "GET",
+        headers: { "accept": "application/json;odata=verbose" }
+    });
+}
+var newName = '';
+var fileUploaded=false;
+var fileUri ='';
 function uploadFile() {
-
+    fileUploaded = false;
 	$('#uploadWarning').css('display','none');
-	$('#uploadSuccess').css('display','none');
 	$('#uploadDanger').css('display','none');
-	$('#btnFile').attr('disabled','disabled');
+    $('#btnFile').attr('disabled','disabled');
+    $("[name='uploadName']").html('Uploading');
 	
-    // Define the folder path for this example.
+	// Define the folder path for this example.
     var serverRelativeUrlToFolder = 'CARTDocs/'+$('#uploadFileId').html();
-	
-	console.log('Project name..' + serverRelativeUrlToFolder);
 	//'shared documents';
-
+    if(xmlFile && xmlFile.length>0){
+        var myBlob = new Blob([xmlFile], {type : 'text/xml'});
+    
+        if(myBlob) serverRelativeUrlToFolder = 'CARTProjects/';
+    }
     // Get test values from the file input and text input page controls.
     var fileInput = $('#getFile');
-	var newName = '';
-	if(fileInput[0].files.length>0)
-     newName = fileInput[0].files[0].name;
+	
+    if(myBlob){
+        newName = ProjectName +".xml"
+    }
+    else if(fileInput && fileInput[0].files.length>0){
+        newName = fileInput[0].files[0].name;
+    }
+	
 	else {
 		$('#uploadWarning').css('display','');
 		$('#btnFile').removeAttr('disabled');
 		
 		return false;
 	} 
-    // Get the server URL.
-    var serverUrl = _spPageContextInfo.webAbsoluteUrl;
-
+   
     // Initiate method calls using jQuery promises.
     // Get the local file as an array buffer.
 	 var getFile = getFileBuffer();
 	if(newName.length<0) getFile = null;
-   
     getFile.done(function (arrayBuffer) {
-
         // Add the file to the SharePoint folder.
-        var addFile = addFileToFolder(arrayBuffer);
-        addFile.done(function (file, status, xhr) {
+        addFileToFolder(arrayBuffer)
+            .done(function (file, status, xhr) {
+            //console.log('ListItemAllFields ', file.d.ListItemAllFields.__deferred.uri);
+            
+            if(myBlob) xmlItemPath = folderPath;//file.d.ListItemAllFields.__deferred.uri;
+            else xmlItemPath = file.d.ListItemAllFields.__deferred.uri;
 
             // Get the list item that corresponds to the uploaded file.
-            var getItem = getListItem(file.d.ListItemAllFields.__deferred.uri);
-            getItem.done(function (listItem, status, xhr) {
+                getListItem(xmlItemPath)
+                    .done(function (listItem, status, xhr) {
 
-                // Change the display name and title of the list item.
-				//ParentID , CARTProjectName
-                var changeItem = updateListItem(listItem.d.__metadata,$('#FileId').html(),$('#uploadFileId').html());
-                changeItem.done(function (data, status, xhr) {
-                    //alert('file uploaded and updated');
-					
-					$('#uploadSuccess').css('display','');
-					
-					$('#btnFile').removeAttr('disabled');
-					
-					fileInput.replaceWith(fileInput = fileInput.clone(true));
-					if(fileInput.val) fileInput.val('');
-					console.log(fileInput[0].files);
-					
+                        //console.log('file uploaded and getItem.done -->', xmlItemPath);
+                        //Change the display name and title of the list item.
+                        if(myBlob) console.log('file uploaded and myBlob');
+                        else {
+                                updateListItem(listItem.d.__metadata,$('#FileId').html(),$('#uploadFileId').html())
+                                .done(function (data, status, xhr) {
+                            
+                                    console.log('file uploaded data ', file.d);
+                                    $('#uploadSuccess').css('display','');
+                                    $("[name='uploadName']").html('Upload');
+	                                $('#btnFile').removeAttr('disabled');
+                                    fileUploaded = true;
+                                    fileUri = file.d.__metadata.uri;
+                                    fileInput.replaceWith(fileInput = fileInput.clone(true));
+                                    if(fileInput.val) fileInput.val('');
+                            
+                            
+                                }).fail(function(){
+                                    console.log('Error updateListItem ');
+                                    
+                                    $('#uploadDanger').css('display','');
+                                    $('#btnFile').removeAttr('disabled');
+                                });
+
+                        }
+                            
+                    
+                    }).fail(function(){
+                        console.log('Error getListItem ');
+                    });
+                }).fail(function(){
+                    console.log('Error addFileToFolder ');
+                    onerrorFlag = "Error addFileToFolder";
                 });
-                changeItem.fail(onError);
-            });
-            getItem.fail(onError);
-        });
-        addFile.fail(onError);
     });
+
     getFile.fail(onError);
 
     // Get the local file as an array buffer.
@@ -179,17 +464,30 @@ function uploadFile() {
         reader.onerror = function (e) {
             deferred.reject(e.target.error);
         }
-        reader.readAsArrayBuffer(fileInput[0].files[0]);
+        if(myBlob){
+            reader.readAsArrayBuffer(myBlob);
+        }
+		else if(fileInput && fileInput[0].files.length>0)  reader.readAsArrayBuffer(fileInput[0].files[0]);
+		//else reader.readAsArrayBuffer(myBlob);
+		//$.parseXML( xml )
         return deferred.promise();
     }
 
     // Add the file to the file collection in the Shared Documents folder.
     function addFileToFolder(arrayBuffer) {
 
-        // Get the file name from the file input control on the page.
-        var parts = fileInput[0].value.split('\\');
-        var fileName = parts[parts.length - 1];
+        var parts; //= fileInput[0].value.split('\\');
+        //var fileName = parts[parts.length - 1];
+        var fileName;// = myBlob?newName:parts[parts.length - 1];
+        if(myBlob) fileName = newName
+            
+		else if(fileInput && fileInput[0].files.length>0){
+            parts = fileInput[0].value.split('\\');
+            fileName = parts[parts.length - 1];
 
+        } 
+        // Get the file name from the file input control on the page.
+       
         // Construct the endpoint.
         var fileCollectionEndpoint = String.format(
                 "{0}/_api/web/getfolderbyserverrelativeurl('{1}')/files" +
@@ -198,6 +496,7 @@ function uploadFile() {
 
         // Send the request and return the response.
         // This call returns the SharePoint file.
+        // "content-length": arrayBuffer.byteLength
         return jQuery.ajax({
             url: fileCollectionEndpoint,
             type: "POST",
@@ -205,22 +504,13 @@ function uploadFile() {
             processData: false,
             headers: {
                 "accept": "application/json;odata=verbose",
-                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
-                "content-length": arrayBuffer.byteLength
+                "X-RequestDigest": jQuery("#__REQUESTDIGEST").val()
+               
             }
         });
     }
 
-    // Get the list item that corresponds to the file by calling the file's ListItemAllFields property.
-    function getListItem(fileListItemUri) {
-
-        // Send the request and return the response.
-        return jQuery.ajax({
-            url: fileListItemUri,
-            type: "GET",
-            headers: { "accept": "application/json;odata=verbose" }
-        });
-    }
+   
 
     // Change the display name and title of the list item.
     function updateListItem(itemMetadata, ParentID , CARTProjectName) {
@@ -229,9 +519,13 @@ function uploadFile() {
         // For simplicity, also use the name as the title. 
         // The example gets the list item type from the item's metadata, but you can also get it from the
         // ListItemEntityTypeFullName property of the list.
-        var body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ParentID':'{3}','CARTProjectName':'{4}'}}",
+        var body ='';
+        if(myBlob) body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}'}}",
+            itemMetadata.type, newName, newName);
+        else if(fileInput && fileInput[0].files.length>0)
+            body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ParentID':'{3}','CARTProjectName':'{4}'}}",
             itemMetadata.type, newName, newName,ParentID,CARTProjectName);
-
+        
         // Send the request and return the promise.
         // This call does not return response content from the server.
         return jQuery.ajax({
@@ -249,11 +543,12 @@ function uploadFile() {
     }
 }
 
-	// Display error messages. 
+// Display error messages. 
 	function onError(error) {
 		console.log(error.responseText);
 		$('#btnFile').removeAttr('disabled');
-		$('#uploadDanger').css('display','');
+        $('#uploadDanger').css('display','');
+       
 		
 	}
 		
@@ -275,7 +570,7 @@ function uploadFile() {
 			initializePeoplePicker(peoplePickerDiv,null,null,isMulti);	
 		
 		
-		$('#'+peoplePickerDiv+'_TopSpan').attr('style','width:300px;height: 40px;border-color: #92c0e0;border-radius: 4px;');
+		$('#'+peoplePickerDiv+'_TopSpan').attr('style','width:100%;height: 45px;border-color: #92c0e0;border-radius: 4px;');
 		//SPClientPeoplePickerProcessedUser.DeleteProcessedUser($('#peoplePickerDiv_TopSpan_ResolvedList')[0].firstChild)
 	}
 
@@ -422,10 +717,20 @@ function showGraph(){
 
 </script>
 
+<style>
+    .hTitle{
+        width:5%;
+        
+    }
+    .hTitle2{
+        word-break:break-all;
+        width:2%;
+    }
+</style>
 
 </head>
 <body>
-<base href="/">
-  <app-root>Loading Components...</app-root>
+<base href="/"><br><br>
+  <app-root>Loading Dashboard Components...</app-root>
 </body>
 </html>

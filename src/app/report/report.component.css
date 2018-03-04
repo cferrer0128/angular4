@@ -1,0 +1,14 @@
+.green-report{
+    background-color: rgb(110, 206, 118);
+}
+
+.dates-report{
+    background-color: #E68788;
+}
+.gray-report{
+    background-color: #ffffff; /*rgba(239, 239, 239, 0.78);*/
+}
+
+.white-report{
+    background-color: #ffffff;
+}
