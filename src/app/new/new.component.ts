@@ -184,8 +184,10 @@ export class NewComponent implements OnInit, OnDestroy {
 						data =>{
 							this.isuserReady =  true;
 							this.currentUser = data;
-							console.log('User Returned ' , this.currentUser.Id);
+							
 							this.isInGroup = this._projectService.isInGroup;
+
+							console.log('User Returned ' , this.currentUser.Id , this._projectService.isInGroup);
 						},err => { console.log("GET Current User Error: " + err._body); }
 					);
 			
@@ -364,6 +366,10 @@ export class NewComponent implements OnInit, OnDestroy {
 		{
 			email = this.currentUser?this.currentUser.Email:"";
 			ReqID =   email.substring(0,email.indexOf('@'))+"";
+			
+			if(ReqID && ReqID.indexOf('\\')>0)
+				ReqID = ReqID?ReqID.substring(0,ReqID.indexOf('\\'))+"":"";
+			
 			ReqName = this.currentUser.Title;
 
 		}
@@ -378,6 +384,9 @@ export class NewComponent implements OnInit, OnDestroy {
 			email = this.BISO[0].EntityData?this.BISO[0].EntityData.Email:"";
 			if(email.length<=0) email = this.BISO[0].Description;
 			BisoID = email?email.substring(0,email.indexOf('@'))+"":"";
+			if(BisoID.length<=0)
+				BisoID = email?email.substring(0,email.indexOf('\\'))+"":"";
+			
 			BisoName = this.BISO[0].DisplayText;
 			
 		}
@@ -397,6 +406,7 @@ export class NewComponent implements OnInit, OnDestroy {
 		}
 		
 		this.golivedate = $("[name='golivedate']").val();
+		this.AMethod=$("[name='AMethod']").val()
 		let showMsg = "";
 		if(this.tryObjects(this.Sector,"Sector must be selected").length>0) showMsg = window["focusMessage"];
 		else if(this.tryObjects(this.BusinessUnit,"Business Unit must be selected").length>0) showMsg = window["focusMessage"];
@@ -404,8 +414,13 @@ export class NewComponent implements OnInit, OnDestroy {
 		else if(this.tryObjects(this.TypeOfServ,"Type of Service must be selected").length>0) showMsg = window["focusMessage"];
 		else if(this.tryObjects(this.dataClassiValue,"Information Classification must be selected").length>0) showMsg = window["focusMessage"];
 		else if(this.tryObjects(this.golivedate,"Go Live Date must be selected").length>0) showMsg = window["focusMessage"];
+		else if(this.tryObjects(this.AMethod," Access Method must be selected ").length>0) showMsg = window["focusMessage"];
+		else if(this.tryObjects(BisoName,"Name of the Business Information Security Officer [BISO] must be selected").length>0) showMsg = window["focusMessage"];
 		else if(isNaN(this.CSI)){window["focusMessage"]="a number must be entered on CSI";showMsg = window["focusMessage"];}
 		else if(isNaN(this.CTC)){window["focusMessage"]="a number must be entered on CTC";showMsg = window["focusMessage"];}
+		else if(this.AMethod == "Select"){window["focusMessage"]=" Access Method must be selected ";showMsg = window["focusMessage"];}
+		
+		var ProjectFileItemsData=null;
 		//		
 		if(showMsg.length>0){
 				window["isError"] = true;
@@ -413,28 +428,32 @@ export class NewComponent implements OnInit, OnDestroy {
 				this.focusMessage = showMsg;
 				this.isSaved = false;
 				this.isFocus = true;
-				$('#msgID').css('display','');
-				$('#modalID').css('display','none');
-				$('#idSaved').css('display','none');
-				$('#SavingId').css('display','none');
-				$('.saving').css('display','none');
+
+				setTimeout(() => {
+					$('#msgID').css('display','');$('#warningId').css('display','');
+					$('#modalID').css('display','none');
+					$('#idSaved').css('display','none');
+					$('.saving').css('display','none');
+				},1000)
+				
+				
 				
 		}else
 		setInterval(() => {
-		let fileItems =  window["xmlItemPath"];
-		let errorFlag = window["onerrorFlag"];
-		showMsg = window["focusMessage"];
-		$('#modalID').css('display','');
-		this.golivedate = $("[name='golivedate']").val();
-		this.Sector = $("[name='Sector']").val();
-		this.CSI =$("[name='CSI']").val();this.CTC=$("[name='CTC']").val();
-		this.PSiteLoc=$("[name='PSiteLoc']").val();
-		this.SSiteLoc=$("[name='SSiteLoc']").val();this.AMethod=$("[name='AMethod']").val();
-		this.Product=$("[name='Product']").val();this.Supplier=$("[name='Supplier']").val();
-		this.ReqDescription = $("[name='ReqDescription']").val();
-		this.HMethod = $("[name='HMethod']").val();
-		this.localProject.name = this.Sector+"-"+this.Supplier+"-"+this.Product;
-		this.localProject.id = window["RecordId"];
+			let fileItems =  window["xmlItemPath"];
+			let errorFlag = window["onerrorFlag"];
+			showMsg = window["focusMessage"];
+			$('#modalID').css('display','');
+			this.golivedate = $("[name='golivedate']").val();
+			this.Sector = $("[name='Sector']").val();
+			this.CSI =$("[name='CSI']").val();this.CTC=$("[name='CTC']").val();
+			this.PSiteLoc=$("[name='PSiteLoc']").val();
+			this.SSiteLoc=$("[name='SSiteLoc']").val();this.AMethod=$("[name='AMethod']").val();
+			this.Product=$("[name='Product']").val();this.Supplier=$("[name='Supplier']").val();
+			this.ReqDescription = $("[name='ReqDescription']").val();
+			this.HMethod = $("[name='HMethod']").val();
+			this.localProject.name = this.Sector+"-"+this.Supplier+"-"+this.Product;
+			this.localProject.id = window["RecordId"];
 		//console.log('golivedate ' , $("[name='golivedate']").val())
 		if(fileItems.length>0 && showMsg.length<=0 && 
 			!this.isSaved && this.golivedate && this.golivedate.length>0){
@@ -451,7 +470,7 @@ export class NewComponent implements OnInit, OnDestroy {
 				this.ID = data.Id;
 				//$("[name='RecordId']").val("Project Id: "+data.Id);
 				this._projectService.newRecordId = data.Id;
-				var ProjectFileItemsData = {
+				ProjectFileItemsData = {
 					__metadata:{type:'SP.Data.CARTProjectsItem'},
 					Sector:this.Sector,Product_x0020_Name:this.Product,Project_x0020_Name:this.localProject.name,
 					Requester_x0020_Team_x0020_Names:reqTeamNames,Requester_x0020_Team_x0020_IDs:reqTeamIDs,
@@ -484,7 +503,6 @@ export class NewComponent implements OnInit, OnDestroy {
 									$('#idSaved').css('display','');
 									$('#msgID').css('display','none');
 									$('#modalID').css('display','none');
-									$('.saving').css('display','none');
 									$('#SavingId').css('display','none');
 									$('#SavedId').css('display','');
 									this.isSaved = true;
@@ -499,11 +517,35 @@ export class NewComponent implements OnInit, OnDestroy {
 									
 								
 									
-						},err => { console.log("CARTProjectsItem Error: " + err._body); }
+						},err => { 
+							
+							console.log("CARTProjectsItem Error: " + err._body); 
+						
+							let varLog = {
+								Id: this.ID,
+								errLog:err._body,
+								data:ProjectFileItemsData
+							}
+							let cartlog ={ __metadata:{type:'SP.Data.CARTSPLogListItem'},cartlog:varLog}
+							try{
+								//AddCARTSPLog
+								this._projectService.postProjects(cartlog,'CARTSPLog')
+								.then(logResponse =>{
+									console.log('Log already added ' , logResponse)
+								})
+								
+							}catch(e){
+								console.log('Error Log  varLog ' , varLog , e)
+							}
+							
+						}
 						);
 						
 
-			}, err => { console.log("getFileMetaData Error: " + err._body); })
+			}, err => { 
+				console.log("getFileMetaData Error: " + err._body);
+			
+			})
 			
 
 

@@ -276,7 +276,8 @@ var isError=false;
 function addNewFile(){
     $('#msgID').css('display','none');
     $("#myModalDlg").css('display','');
-    $('.saving').css('display','');
+    $(".saving").css('display','');
+   
     //$(".modal-backdrop.in").show();
     //$('#myModal').modal('show');
     var newDate = new Date();
@@ -301,16 +302,16 @@ function addNewFile(){
         $('#msgID').css('display','');
         //$('#warningId').css('display','');
         focusMessage = 'Error Project folder already exist, please try a new one';
-        onerrorFlag = 'Error Project folder already exist, please try a new one';;
+        onerrorFlag = focusMessage;
         $('.saving').css('display','none');
+      
     }).fail(function(){
         
         $('#footwarningId').css('display','none');
         $('#warningId').css('display','none');
         $('.saving').css('display','');
-
         $('#msgID').css('display','none');
-        
+       // focusMessage = 'folder does not exist ' +ProjectName 
         console.log('folder does not exist ', ProjectName);
         addFolfer(ProjectName)
         .done(function(data){
@@ -318,7 +319,14 @@ function addNewFile(){
             uploadFile();
         }).fail(function(){
             console.log("Error addFolfer  ");
-           
+            
+            focusMessage = 'Project Name error, please contact support ' + ProjectName ;
+            onerrorFlag = focusMessage;
+            $('.saving').css('display','none');
+            $('#msgID').css('display','');
+            $('#warningId').css('display','');
+            $('#footwarningId').css('display','');
+
         });
     });
     

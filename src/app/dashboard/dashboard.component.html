@@ -57,7 +57,7 @@
 	</tr>	
 <tr>
 	<td style="width:320px">
-		<div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList.length}}</strong></div>
+		<div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList?projectList.length:''}}</strong></div>
 	</td>
 	<td style="width:320px">
 	<div class="input-group" style="width:350px">
@@ -143,6 +143,7 @@
 						<th>
 							<mfDefaultSorter by="bdrationaled">Executive Summary of Service</mfDefaultSorter>
 						</th>
+						
 					</tr>
 					<tr style="display:none">
 						<th colspan="5">
@@ -164,7 +165,7 @@
 						<td>{{item.reviewer}}</td>
 						<td>{{item.initDT}}</td>
 						<td>{{item.bdrationaled}}</td>
-						
+					
 						
 					</tr>
 					</tbody>
