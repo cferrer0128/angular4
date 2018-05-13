@@ -13,7 +13,14 @@
 <div class="tab-content" *ngIf="isReady">
 	<div class="alert alert-warning" role="alert" *ngIf="isFocus">
 				<strong>Warning!</strong> {{focusMessage}}.
+		
+				<h3 *ngIf="isCancel"  style="margin-top:auto;margin-right:10px; margin-left:10px"><span class="label label-warning">
+					<a href="javascript:;" style="color: aliceblue;" (click)="goCancelProject(true)"><i class="glyphicon glyphicon-remove">Save</i></a></span></h3>
+				<h3 *ngIf="isCancel" style="margin-top:auto;margin-right:10px; margin-left:10px"><span class="label label-primary">
+					<a   href="javascript:;" style="color: aliceblue;" (click)="showCancel(false)"><i class="glyphicon glyphicon-remove">Close</i></a></span></h3>
+				
 	</div>
+	
 	<div class="alert alert-info saving" role="alert"  style="display:none" id="SavingId">
    
 		<div  id="uploadSuccess" class="alert alert-info" role="alert"> <strong>Updating Record!</strong><img src="/_layouts/15/images/gears_anv4.gif"  height="20" width="20"></div>
@@ -24,8 +31,8 @@
 		<label name="RecordId" class="control-label" style="margin-left: inherit;">Project Id: {{localProject.id}}</label>
 	   
 		<h3 id="myReq" style="margin-top:auto;margin-right:5px;"><span class="label label-primary">
-		  <a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Close</i></a></span></h3>
-	  </div>
+		  <a  href="{{'/sites/dev/SitePages/CARTDash.aspx'}}" style="color: aliceblue;"><i class="glyphicon glyphicon-remove">Close</i></a></span></h3>
+	</div>
     <div id="project" class="tab-pane fade in active">
 		<div class="input-group" style="width:380px">
 		
@@ -38,8 +45,15 @@
 			</div>
 			<div class="input-group-btn" *ngIf="!isSaved">
 				
+				<h3 id="myReq" style="margin-top:auto;margin-right:10px; margin-left:10px"><span class="label label-primary">
+					<a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Close</i></a></span></h3>
+				
+			
+			</div>
+			<div class="input-group-btn" *ngIf="!isSaved" style="display:none">
+				
 				<h3 id="myReq" style="margin-top:auto;margin-right:10px; margin-left:10px"><span class="label label-danger">
-					<a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Cancel</i></a></span></h3>
+					<a href="javascript:;" (click)="showCancel(true)" style="color: aliceblue;"><i class="glyphicon glyphicon-remove">Cancel</i></a></span></h3>
 				
 			
 			</div>
@@ -515,25 +529,7 @@
 			
 	<!-- foot actions-->	
 	
-	<div class="input-group" style="width:380px">
-		
-		<div class="input-group-btn" *ngIf="!isSaved">
-			
-			<h3 id="myReq" style="margin-top:auto;margin-right:5px;"><span class="label label-success">
-				<a href="javascript:;" style="color: aliceblue;" (click)="goSaveProject()"><i class="glyphicon glyphicon-th-large">Register</i></a></span></h3>
-			
-		
-		</div>
-		<div class="input-group-btn" *ngIf="!isSaved">
-			
-			<h3 id="myReq" style="margin-top:auto;margin-right:10px;margin-left:10px"><span class="label label-danger">
-				<a href="javascript:;" style="color: aliceblue;" (click)="goProject()"><i class="glyphicon glyphicon-remove">Cancel</i></a></span></h3>
-			
-		
-		</div>
-		<p style="color: brown;">* - Mandatory Information</p>
-				
-	</div>
+	
 
 	<div class="alert alert-info saving" role="alert"  style="display:none" id="SavingId">
    

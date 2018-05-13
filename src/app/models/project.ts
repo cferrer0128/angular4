@@ -63,6 +63,8 @@ isrocReport:boolean=false;
 pocpilotReport:boolean=false;
 whiteISROC:boolean=false;ESCDateReport:boolean=false;
 SectorArchReport:boolean=false;DRCOBReport:boolean=false;
+readyForAppDateReport:boolean=false;sisoReport:boolean=false;
+cartAppDate:boolean=false;
 
     constructor(name: string, status: string, reviewer: string,
         requester: string, initDT:  string, id: number , golive: string,
@@ -142,6 +144,12 @@ SectorArchReport:boolean=false;DRCOBReport:boolean=false;
        
         this.isrocReport = this.validateDate(this.ISROCDate);
         
+        this.sisoReport = this.validateDate(this.SISOSector);
+
+        this.readyForAppDateReport =  this.validateDate(this.ReadyForAppDate);
+
+        this.cartAppDate =  this.validateDate(this.CARTAppDate);
+
         //console.log('ISROC ', this.validateDate(this.ISROCDate) , this.id , this.ISROCDate);
 
         this.ESCDateReport = this.validateDate(this.ESCDate);
@@ -150,12 +158,15 @@ SectorArchReport:boolean=false;DRCOBReport:boolean=false;
         
         this.DRCOBReport =  this.validateDate(this.DRCOBDate);
 
-           
-        if(this.TypeOfRequest && this.TypeOfRequest.indexOf('Prod')>=0) {this.POCPilotWG = NandAValue;this.pocpilotReport=true;}
-       
-        if(this.TypeOfRequest && this.TypeOfRequest.indexOf('POC')<0) {this.ISROCDate = NandAValue; this.isrocReport=false;}
+        this.dataReport =  this.validateDate(this.DataPrivacyDate);
 
-        if(this.dataClasif && this.dataClasif.indexOf('PII')>=0) {this.DataPrivacyDate = NandAValue; this.dataReport=true}
+        this.pocpilotReport =  this.validateDate(this.POCPilotWG);
+        
+        //if(this.TypeOfRequest && this.TypeOfRequest.indexOf('Prod')>=0) {this.POCPilotWG = NandAValue;this.pocpilotReport=false;}
+       
+        //if(this.TypeOfRequest && this.TypeOfRequest.indexOf('POC')<0) {this.ISROCDate = NandAValue; this.isrocReport=false;}
+
+        //if(this.dataClasif && this.dataClasif.indexOf('PII')>=0) {this.DataPrivacyDate = NandAValue; this.dataReport=false}
 
         let diffDates;
         let one_day = 1000*60*60*24;

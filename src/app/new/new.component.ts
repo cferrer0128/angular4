@@ -150,6 +150,13 @@ export class NewComponent implements OnInit, OnDestroy {
 			this.Product="";this.Supplier="";
 			this.isSaved=false;
 			//filter by Team Member or Requester
+			this._projectService.getListbyName("CARTProjects","?$orderby=ID desc")
+			.subscribe(data =>{
+				
+				if(data && data.length>0)	this.maxID = (parseInt(data[0].Id) + 1).toString()
+				window["maxID"]  = this.maxID;
+				console.log('getting max record Id ', data , this.maxID);
+			})
 			// eq 'Service'
 			this._projectService.getListbyName("CARTDataCatalogs","?$orderby=DataType")
 			.subscribe(data =>{
@@ -176,6 +183,7 @@ export class NewComponent implements OnInit, OnDestroy {
 					
 				
 			});
+			//get 
 			//Promise to find Xml File
 			this.getXmlFile(this.localProject.newName);
 
@@ -231,12 +239,7 @@ export class NewComponent implements OnInit, OnDestroy {
 							},
 							err => { console.log("GET CARTDataCatalogs Error: " + err._body); }
 							);
-				setInterval(() => {
-					window["ProjectName"] =  this.Sector + "-" + this.Supplier + "-" + this.Product;
-					
-					
-					
-				},1500);
+							//setTimer
 
        
 	}
@@ -254,6 +257,8 @@ export class NewComponent implements OnInit, OnDestroy {
 	private oListItem:any;
 	public EngaMetMinute:string;
 	public ID:any;
+	private maxID:any;
+
 	//public ESupplier:boolean=false;
 
 
@@ -337,6 +342,8 @@ export class NewComponent implements OnInit, OnDestroy {
 		var reqTeamIDs = "";
 		var reqTeamNames = "";
 		var email ="";
+
+	
 		this.RequesterTeamIDs = window["ReqTeamIDs"]?JSON.parse(window["ReqTeamIDs"]):"";
 		if(this.RequesterTeamIDs && this.RequesterTeamIDs.length>0){
 
@@ -348,7 +355,10 @@ export class NewComponent implements OnInit, OnDestroy {
 				reqTeamNames += this.RequesterTeamIDs[i].DisplayText +";"
 			};
 
+			
 		}
+
+		console.log('Done  Processing RequesterTeamIDs ', this.RequesterTeamIDs , reqTeamIDs , reqTeamNames);
 
 		var ReqID ="";
 		var ReqName="";
@@ -394,7 +404,7 @@ export class NewComponent implements OnInit, OnDestroy {
 
 		var jsonProjectData = {
 			__metadata:{type:'SP.Data.CARTProjectsItem'},
-			Sector:this.Sector,Product_x0020_Name:this.Product,Project_x0020_Name:this.localProject.name,
+			Sector:this.Sector,Product_x0020_Name:this.Product,Project_x0020_Name:this.localProject.name.trim(),
 			Business_x0020_Unit:this.BusinessUnit,Dedicated_x0020_Or_x0020_Shared:this.Dedicated,
 			Data_x0020_Classification_x0020_Type:this.dataClassiValue,Brief_x0020_Desciption_x0020_Rationale:this.ReqDescription,
 			Supplier_x0020_Name:this.Supplier,Requester_x0020_Name:ReqName,Requester_x0020_ID:ReqID,
@@ -408,6 +418,9 @@ export class NewComponent implements OnInit, OnDestroy {
 		this.golivedate = $("[name='golivedate']").val();
 		this.AMethod=$("[name='AMethod']").val()
 		let showMsg = "";
+		//let re = /[A-Za-z0-9]/;
+
+		
 		if(this.tryObjects(this.Sector,"Sector must be selected").length>0) showMsg = window["focusMessage"];
 		else if(this.tryObjects(this.BusinessUnit,"Business Unit must be selected").length>0) showMsg = window["focusMessage"];
 		else if(this.tryObjects(this.TypeOfReq,"Type of Request   must be selected").length>0) showMsg = window["focusMessage"];
@@ -420,6 +433,15 @@ export class NewComponent implements OnInit, OnDestroy {
 		else if(isNaN(this.CTC)){window["focusMessage"]="a number must be entered on CTC";showMsg = window["focusMessage"];}
 		else if(this.AMethod == "Select"){window["focusMessage"]=" Access Method must be selected ";showMsg = window["focusMessage"];}
 		
+		/*
+		this.Supplier=$("[name='Supplier']").val().trim();
+		this.Product=$("[name='Product']").val().trim();
+		let arrResult = re.exec(this.Supplier);
+		console.log('result from reg exp ', arrResult)
+		if(!arrResult) showMsg ="Supplier has invalid character";
+		arrResult = re.exec(this.Product)
+		if(!arrResult) showMsg ="Product has invalid character";*/
+
 		var ProjectFileItemsData=null;
 		//		
 		if(showMsg.length>0){
@@ -428,18 +450,21 @@ export class NewComponent implements OnInit, OnDestroy {
 				this.focusMessage = showMsg;
 				this.isSaved = false;
 				this.isFocus = true;
-
+			
 				setTimeout(() => {
 					$('#msgID').css('display','');$('#warningId').css('display','');
 					$('#modalID').css('display','none');
 					$('#idSaved').css('display','none');
 					$('.saving').css('display','none');
+					$('#newSave').css('display','');
+					$('#newSaveFoot').css("display","");
 				},1000)
 				
 				
 				
 		}else
 		setInterval(() => {
+			
 			let fileItems =  window["xmlItemPath"];
 			let errorFlag = window["onerrorFlag"];
 			showMsg = window["focusMessage"];
@@ -449,13 +474,15 @@ export class NewComponent implements OnInit, OnDestroy {
 			this.CSI =$("[name='CSI']").val();this.CTC=$("[name='CTC']").val();
 			this.PSiteLoc=$("[name='PSiteLoc']").val();
 			this.SSiteLoc=$("[name='SSiteLoc']").val();this.AMethod=$("[name='AMethod']").val();
-			this.Product=$("[name='Product']").val();this.Supplier=$("[name='Supplier']").val();
-			this.ReqDescription = $("[name='ReqDescription']").val();
+			this.Product=$("[name='Product']").val().trim();this.Supplier=$("[name='Supplier']").val().trim();
+			this.ReqDescription =  $("[name='ReqDescription']").val();
+			let maxlen = 254;
+			if(this.ReqDescription && this.ReqDescription.length>0 && this.ReqDescription.length>maxlen)  {this.ReqDescription =  this.ReqDescription.substring(0,maxlen); console.log('Executive is grather than  ',maxlen) }
 			this.HMethod = $("[name='HMethod']").val();
-			this.localProject.name = this.Sector+"-"+this.Supplier+"-"+this.Product;
+			this.localProject.name = this.Sector+"-"+this.Supplier.trim()+"-"+this.Product.trim();
 			this.localProject.id = window["RecordId"];
-		//console.log('golivedate ' , $("[name='golivedate']").val())
-		if(fileItems.length>0 && showMsg.length<=0 && 
+			//console.log('golivedate ' , $("[name='golivedate']").val())
+			if(fileItems.length>0 && showMsg.length<=0 && 
 			!this.isSaved && this.golivedate && this.golivedate.length>0){
 			//console.log('fileItems sync..!', fileItems);
 			window["xmlItemPath"] = "";
@@ -466,13 +493,13 @@ export class NewComponent implements OnInit, OnDestroy {
 			this.isFocus = false;
 			this._projectService.getFileMetaData(fileItems,'')
 			.then(data => {
-				console.log('Data ID   ' , data.Id);
+				console.log('getFileMetaData ' , data);
 				this.ID = data.Id;
 				//$("[name='RecordId']").val("Project Id: "+data.Id);
 				this._projectService.newRecordId = data.Id;
 				ProjectFileItemsData = {
 					__metadata:{type:'SP.Data.CARTProjectsItem'},
-					Sector:this.Sector,Product_x0020_Name:this.Product,Project_x0020_Name:this.localProject.name,
+					Sector:this.Sector,Product_x0020_Name:this.Product,Project_x0020_Name:this.localProject.name.trim()+'-'+this.maxID,
 					Requester_x0020_Team_x0020_Names:reqTeamNames,Requester_x0020_Team_x0020_IDs:reqTeamIDs,
 					CTCID:this.CTC,CSI:this.CSI,BISO_x0020_RO:BisoName,Request_x0020_Status:'Registration In Progress',
 					RegRisk:this.IsRisk,RegSOXIndicator:this.SOXChkYes?true:false,RegKPMG:this.KPMGChkYes?true:false,
@@ -519,13 +546,18 @@ export class NewComponent implements OnInit, OnDestroy {
 									
 						},err => { 
 							
+							$('#newSave').css('display','');
+							$('#newSaveFoot').css("display","");
+							$('.saving').css('display','none');
+
+							this.focusMessage = " an unexpected error has occurred, please contact support for help ";
+							this.isSaved = false;
+							this.isFocus = true;
+							
 							console.log("CARTProjectsItem Error: " + err._body); 
 						
-							let varLog = {
-								Id: this.ID,
-								errLog:err._body,
-								data:ProjectFileItemsData
-							}
+							let varLog = 'ID- ' + this.ID + 'errLog: - '+err._body + 'data: -' +JSON.stringify(ProjectFileItemsData);
+							
 							let cartlog ={ __metadata:{type:'SP.Data.CARTSPLogListItem'},cartlog:varLog}
 							try{
 								//AddCARTSPLog
@@ -624,11 +656,11 @@ export class NewComponent implements OnInit, OnDestroy {
 		
 			 switch (value.name) {
 				 case "Supplier":
-					this.Supplier = value.value; 
+					this.Supplier = value.value.trim(); 
 					
 					break;
 				case "Product":
-					this.Product = value.value
+					this.Product = value.value.trim()
 				
 					break;
 				 
@@ -740,7 +772,7 @@ export class NewComponent implements OnInit, OnDestroy {
 					break;
 		}
 
-		this.localProject.name = this.Sector + "-" + this.Supplier + "-" + this.Product;
+		this.localProject.name = this.Sector + "-" + this.Supplier.trim() + "-" + this.Product.trim();
 		
 	}
 	
@@ -782,7 +814,7 @@ export class NewComponent implements OnInit, OnDestroy {
 
 	goProject() {
 
-         this._route.navigate([window["routeURL"]]);
+        // this._route.navigate([window["routeURL"]]);
        
 
 	}

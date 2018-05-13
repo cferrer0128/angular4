@@ -10,7 +10,6 @@ import { Router } from '@angular/router';
 declare var jquery: any;
 declare var $: any;
 
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -39,7 +38,7 @@ export class DashboardComponent implements OnInit {
 	public rootUrl:string=window["spSite"]; 
 	public routerUrl:string=window["routeURL"]
 	public newUrl:string = this.rootUrl+ "/_layouts/15/FormServer.aspx?XsnLocation=" + this.rootUrl + "/CARTProjects/Forms/template.xsn&SaveLocation="+ this.rootUrl + "/CARTProjects&ClientInstalled=true&Source=" + this.rootUrl +"/SitePages/CARTDash.aspx?PageView=Shared&InitialTabId=Ribbon.WebPartPage&VisibilityContext=WSSWebPartPage&openin=browser";
-	
+	public scored:boolean=false;
 	//new code.............................
 	public data;
 	public dataGlobal;
@@ -49,9 +48,13 @@ export class DashboardComponent implements OnInit {
 	public sortOrder = "asc";
 	public isInGroup:boolean=false;
 	public currentUser:any;
-	public isDateChanged:boolean=false;
+	public isDateChanged:boolean=false; 
+	public isIE:boolean=false;
+
 	public MaxRecords:any=0;
 	public isInArray=[];
+	public gotoUrl:string="";
+
 	//................................
   	constructor(public _projectService: ProjectService , 
 			 private _router: Router) { 
@@ -139,7 +142,40 @@ export class DashboardComponent implements OnInit {
 				
 	   },1500);
 	}
-	  
+	
+	private  validateDate(field:any){
+
+		if(field == null || field.toString() == "undefined") return false;
+		
+		if(field && field.length<=0) return false;
+  
+		let dateChk = new Date(field);
+	   
+		return dateChk.toString().indexOf("Invalid")<0;
+  
+	}
+  
+  
+	  calculateBGColor(xvalue){
+  
+		if(this.validateDate(xvalue))
+		return {
+		  background: '#6ece76'
+		}
+		else
+		return {
+		  background: '#ddd'
+		}
+  
+	  }
+	showScore(isScore){
+		this.scored = !isScore;
+		if (ProjectService.filteredData.length>0){
+			this.projectList = ProjectService.filteredData;
+			this.pListGlobal = this.projectList;
+		
+		  } 
+	}
 	  //sendContentFields
 	sendContentFields(xData:any , index:any):boolean{
 
@@ -325,22 +361,19 @@ export class DashboardComponent implements OnInit {
 		}
   	}
   
+	 
 	//ngOnInit
   	ngOnInit() {
+		
+		this.gotoUrl = window["gotoUrl"];
+		if(this.gotoUrl && this.gotoUrl.length>0) this.isIE = true;
 		window["selected"] = false;
 		this.isInGroup = false;
-		/*
-		if (this._projectService.filterRecords && this._projectService.filterRecords.length>0 && this._projectService.newRecordId<=0){
-			this.projectList = this._projectService.filterRecords;
-			this.isFull = true;
-			window["isChange"] = this.isFull;  
-			window["isAll"]=this.isFull;
-			this.isInGroup = this._projectService.isInGroup;
-			return;
-		} */
-		
+			
 		this.nextUrl="";
 		var groups = window["spGroups"];
+	
+		
 		var userName='';
 		window["isAll"]=false;
 		var startTime = Date.now();
@@ -363,7 +396,7 @@ export class DashboardComponent implements OnInit {
 
 			})
 			.then(user => {
-				this._projectService.getUserGroup(window["userId"])
+				this._projectService.getUserGroup()
 				.subscribe(group =>{
 					
 					for (var i = 0; i < group.length; i++) 

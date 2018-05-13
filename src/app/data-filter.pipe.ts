@@ -16,8 +16,20 @@ constructor(private service:ProjectService){
 public items =[];
 
 
+private loopArray(filterArray){
+
+    for(var i=0;i <filterArray.length;i++){
+       
+        this.items.push(filterArray[i]);
+       
+    }
+}
+
+
+
     transform(array: any[], query: string): any {
 
+        //console.log('array and query ', array , query)
         var arrFilter:any;
         this.items = [];
         let arrDataFilter = ProjectService.filteredData;
@@ -36,42 +48,57 @@ public items =[];
         else if(query && this.service.filterQuery =="Status"){
                 arrFilter = _.filter(array, row=> (row.status && 
                  row.status.toLowerCase().indexOf(query.toLowerCase()))> -1);
-                for(var i=0;i <arrFilter.length;i++){
-                    var item = arrFilter[i];
-                    if(item.status != null){
-                         this.items.push(item);
-                    }
- 
-                }
-                this.service.filterRecords =  this.items;
+                 this.loopArray(arrFilter.filter(f => f.status !=null));
+                 this.service.filterRecords =  this.items;
             
         }
         else if(query && this.service.filterQuery =="Requester"){
                 arrFilter = _.filter(array, row=> (row.requester && 
                 row.requester.toLowerCase().indexOf(query.toLowerCase()))> -1);
-
-                for(var i=0;i <arrFilter.length;i++){
-                    var item = arrFilter[i];
-                    if(item.requester != null){
-                        this.items.push(item);
-                    }
- 
-                }
+                this.loopArray(arrFilter.filter(f => f.requester !=null));
                 this.service.filterRecords =  this.items;
             
         }
-            else if(query && this.service.filterQuery =="Reviewer"){
+        else if(query && this.service.filterQuery =="Reviewer"){
                 arrFilter = _.filter(array, row=> (row.reviewer &&  
                 row.reviewer.toLowerCase().indexOf(query.toLowerCase()))> -1);
+                this.loopArray(arrFilter.filter(f => f.reviewer !=null));
+                this.service.filterRecords =  this.items;
 
-               for(var i=0;i <arrFilter.length;i++){
-                   var item = arrFilter[i];
-                   if(item.reviewer != null){
-                        this.items.push(item);
-                   }
+        }
+        else if(query && this.service.filterQuery =="Sector"){
+            arrFilter = _.filter(array, row=> (row.sector &&  
+            row.sector.toLowerCase().indexOf(query.toLowerCase()))> -1);
+            this.loopArray(arrFilter.filter(f => f.sector !=null));
+            this.service.filterRecords =  this.items;
 
-               }//end for
-               this.service.filterRecords =  this.items;
+        }
+        else if(query && this.service.filterQuery =="CSI"){
+            arrFilter = _.filter(array, row=> (row.CSI && 
+                row.CSI.toLowerCase().indexOf(query.toLowerCase()))> -1);
+            this.loopArray(arrFilter.filter(f => f.CSI !=null));
+            this.service.filterRecords =  this.items;
+
+        }
+        else if(query && this.service.filterQuery =="Data"){
+            arrFilter = _.filter(array, row=> (row.dataClasif &&  
+            row.dataClasif.toLowerCase().indexOf(query.toLowerCase()))> -1);
+            this.loopArray(arrFilter.filter(f => f.dataClasif !=null));
+            this.service.filterRecords =  this.items;
+
+        }
+        else if(query && this.service.filterQuery =="TypeofReq"){
+            arrFilter = _.filter(array, row=> (row.TypeOfRequest &&  
+            row.TypeOfRequest.toLowerCase().indexOf(query.toLowerCase()))> -1);
+            this.loopArray(arrFilter.filter(f => f.TypeOfRequest !=null));
+            this.service.filterRecords =  this.items;
+
+        }
+        else if(query && this.service.filterQuery =="TypeofServ"){
+            arrFilter = _.filter(array, row=> (row.TypeOfService &&  
+            row.TypeOfService.toLowerCase().indexOf(query.toLowerCase()))> -1);
+            this.loopArray(arrFilter.filter(f => f.TypeOfService !=null));
+            this.service.filterRecords =  this.items;
 
         }
         else if(query && this.service.filterQuery =="ID"){

@@ -6,7 +6,7 @@
 </div>
 
 <table class="table table-striped" *ngIf="isFull" id="tableHeader">
-<tr>
+	<tr>
 	<td style="width:320px">
 		<div class="input-group date" data-provide="datepicker"  style="width:300px" (focusout)="changeDateValue($event.target.value,'initDate')"  >
 			
@@ -38,6 +38,11 @@
 			<option value="Status">Status</option>
 			<option value="Requester">Requester</option>
 			<option value="Reviewer">Reviewer</option>
+			<option value="Sector">Sector</option>
+			<option value="CSI">CSI</option>
+			<option value="Data">Data Classification</option>
+			<option value="TypeofReq">Type of Request</option>
+			<option value="TypeofServ">Type of Service</option>
 			<option value="ID">ID</option>
 		</select> 
 		</td>
@@ -55,7 +60,7 @@
 		
 		</td>
 	</tr>	
-<tr>
+	<tr>
 	<td style="width:320px">
 		<div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList?projectList.length:''}}</strong></div>
 	</td>
@@ -79,27 +84,31 @@
 			<div class="input-group-btn" *ngIf="isInGroup">
 					
 					<h3 id="H3Grap" style="margin-top:auto;margin-right:2px;display:none"><span class="label label-info">
-						<a  [routerLink]="[routerUrl+'/report',0]"  
+						<a href="{{rootUrl+'/CARTProjects/Forms/ColorViews.aspx'}}"
 						style="color: aliceblue;">
-						<i class="glyphicon glyphicon-th-large">Graphic Report</i></a></span>
+						<i class="glyphicon glyphicon-th-large">Scorecard</i></a></span>
 					</h3>
 			
 			</div>
-			<div class="input-group-btn" id="dashDiv" style="display:none">
-					
-					<h2 style="margin-top:auto;margin-right:2px"><span class="label label-info">
-						<a href='javascript:;' style="color: aliceblue;" onclick="onDashboard();">
-						<i class="glyphicon glyphicon-list">Dashboard</i></a></span>
-					</h2>
 			
+			<div class="input-group-btn" style="display:none">
+                
+					<h3 style="margin-top:auto;margin-right:2px"><span class="label label-info">
+						
+					  <a  href="{{rootUrl+'/CARTProjects/Forms/ColorViews.aspx'}}" style="color: aliceblue;">
+							<i class="glyphicon glyphicon-list">Export-to-Excel</i></a>
+
+					</span>
+					</h3>
+				
 			</div>
 				
 
 	</div>
 	</td>
 
-</tr>
-<tr colspan="2" *ngIf="!isInGroup">
+	</tr>
+	<tr colspan="2" *ngIf="!isInGroup">
 	<td colspan="2">
 			<h3 style="text-align:center"><span>CART Requester Dashboard</span></h3>
 			<h3><span>Please review the content (in FAQ format) in the [CART SP] User Guide to get some familiarity with the CART process before creating a CART request if not already familiar with the CART process.</span></h3>
@@ -108,10 +117,12 @@
 				.Additional CART related documents can be found in the [Links to other Docs] tab of the User Guide.</span></h3>
 			
 		</td>
-</tr>
+	</tr>
 </table>
 
-<div *ngIf="isFull" class="">
+
+
+<div *ngIf="!scored" id="dashTable">
 		
 		
 			<div class="panel panel-default" id="dashID" >
@@ -180,7 +191,6 @@
 		</div>
 
 </div>
-
 
 <div id="graphId" style="display:none">
 	<div class="input-group-btn">

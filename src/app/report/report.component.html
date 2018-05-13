@@ -37,6 +37,11 @@
           <option value="Status">Status</option>
           <option value="Requester">Requester</option>
           <option value="Reviewer">Reviewer</option>
+          <option value="Sector">Sector</option>
+          <option value="CSI">CSI</option>
+          <option value="Data">Data Classification</option>
+          <option value="TypeofReq">Type of Request</option>
+          <option value="TypeofServ">Type of Service</option>
           <option value="ID">ID</option>
         </select> 
         </td>
@@ -54,7 +59,7 @@
       </tr>	
       <tr>
         <td style="width:320px;border-top:0px">
-          <div class="panel-heading"><strong style="color:#337ab7">Records: {{projectList.length}}</strong></div>
+          <div class="panel-heading"><strong style="color:#337ab7">Records: {{serviceList?serviceList.length:projectList.length}}</strong></div>
           
         </td>
         <td style="width:320px;border-top:0px">
@@ -75,12 +80,12 @@
                 </h3>
             
             </div>
-            <div class="input-group-btn" id="dashDiv" style="display:none">
+            <div class="input-group-btn">
                 
-                <h2 style="margin-top:auto;margin-right:2px"><span class="label label-info">
-                  <a href='javascript:;' style="color: aliceblue;" onclick="onDashboard();">
-                  <i class="glyphicon glyphicon-list">Dashboard</i></a></span>
-                </h2>
+                <h3 style="margin-top:auto;margin-right:2px"><span class="label label-info">
+                  <a href='javascript:;' style="color: aliceblue;" onclick="tableToExcel('scoreTable', 'W3C Example Table')">
+                  <i class="glyphicon glyphicon-list">Export-to-Excel</i></a></span>
+                </h3>
             
             </div>
               
@@ -105,7 +110,8 @@
 <div *ngIf="isFull" class="row">
   
     <div class="panel panel-default" id="dashID" >
-      <table  class="table table-table" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable"
+      <table  id="scoreTable"
+       class="table table-table" [mfData]="data | dataFilter : filterQuery" #mf="mfDataTable"
          [(mfSortBy)]="sortBy" [(mfSortOrder)]="sortOrder">
                 <thead>
         <tr colspan="5">
@@ -198,20 +204,20 @@
           <td>{{item.DataClassificationType}}</td>
           <td>{{item.TypeOfRequest}}</td>
           <td>{{item.TypeOfService}}</td>
-          <td [ngClass]="{'dates-report':item.datesReport}">{{item.initDT}}</td>
-          <td [ngClass]="{'dates-report':item.datesReport}">{{item.goLiveST}}</td>
+          <td [ngStyle]="calculateBGColor(item.initDT)">{{item.initDT}}</td>
+          <td [ngStyle]="calculateBGColor(item.goLiveST)">{{item.goLiveST}}</td>
           <td>{{item.bdrationaled}}</td>
           <td>{{item.sector}}</td>
-          <td [ngClass]="{'green-report':item.tpuReport}">{{item.TPUDate}}</td>
-          <td [ngClass]="{'green-report':item.ESCDateReport}">{{item.ESCDate}}</td>
-          <td [ngClass]="{'green-report':item.SectorArchReport}">{{item.SectorArchDate}}</td>
-          <td [ngClass]="{'green-report':item.DRCOBReport}">{{item.DRCOBDate}}</td>
-          <td [ngClass]="{'gray-report':item.dataReport}">{{item.DataPrivacyDate}}</td>
-          <td [ngClass]="{'gray-report':item.pocpilotReport}">{{item.POCPilotWG}}</td>
-          <td>{{item.SISOSector}}</td>
-          <td [ngClass]="{'green-report':item.isrocReport}">{{item.ISROCDate}}</td>
-          <td>{{item.ReadyForAppDate}}</td>
-          <td>{{item.CARTAppDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.TPUDate)">{{item.TPUDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.ESCDate)">{{item.ESCDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.SectorArchDate)">{{item.SectorArchDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.DRCOBDate)">{{item.DRCOBDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.DataPrivacyDate)">{{item.DataPrivacyDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.POCPilotWG)">{{item.POCPilotWG}}</td>
+          <td [ngStyle]="calculateBGColor(item.SISOSector)">{{item.SISOSector}}</td>
+          <td [ngStyle]="calculateBGColor(item.ISROCDate)">{{item.ISROCDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.ReadyForAppDate)">{{item.ReadyForAppDate}}</td>
+          <td [ngStyle]="calculateBGColor(item.CARTAppDate)">{{item.CARTAppDate}}</td>
           
         </tr>
         </tbody>

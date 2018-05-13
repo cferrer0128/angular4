@@ -9,10 +9,8 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  
-  
 
-  <script src="//cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/2014.01.31/classList.min.js"></script>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   
@@ -23,12 +21,21 @@
   
     <!-- Add your JavaScript to the following file -- sites/dev ---- sandbox/cart-->
     
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
-		
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+    
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/js/bootstrap-datepicker.min.js"></script>
-	<link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" rel="Stylesheet" type="text/css">
+     <!-- Add your CSS styles to the following file      -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.0/css/bootstrap-datepicker.min.css" rel="Stylesheet" type="text/css">
 	
-	
+    <!-- Add your CSS styles to the following file      
+    
+    <link rel="stylesheet" href="/sites/dev/Style%20Library/bootstrap.min.css" type="text/css">
+
+    <link href="/sites/dev/Style%20Library/bootstrap-datepicker.min.css" rel="Stylesheet" type="text/css">
+    
+    -->
+    
+    
     <!-- Add your Ui Jquery  
         <script src="//code.jquery.com/jquery-1.12.4.js">
     
@@ -36,13 +43,13 @@
     
         <script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
+        <script src="//d3js.org/d3.v4.min.js"></script>
+
+    <script src="/sites/dev/JavascriptFiles/dimple.v2.3.0.min.js"></script>
+
     </script>-->
    
 
-    <script src="//d3js.org/d3.v4.min.js"></script>
-
-    <script src="/sites/dev/JavascriptFiles/dimple.v2.3.0.min.js"></script>
-	
     <script type="text/javascript">
 		var monthArray;
 		var daysArray;
@@ -58,13 +65,17 @@
         var spSite = _spPageContextInfo.webAbsoluteUrl;
         var spGroups = ['Approvers00','Reviewers00','dev Visitors00']
         var listUrl = _spPageContextInfo.listUrl;
-        var siteServerRelativeUrl = _spPageContextInfo.siteServerRelativeUrl
+        //var siteServerRelativeUrl = _spPageContextInfo.siteServerRelativeUrl
         var topApi=700;
+        var excelLink = "/sites/dev/_vti_bin/owssvr.dll?XMLDATA=1&List={77687046-979A-4CC8-A215-24BC0158A91C}&View={023753E4-31A1-44BD-BE72-D50E4C0EB461}&RowLimit=0"
+        var gotoUrl = navigator.userAgent.search("MSIE")>=0?excelLink:"";
+        
         ExecuteOrDelayUntilScriptLoaded(function () {
          
 
         }, "sp.js");
 
+       
 
         function goSummary(){
             document.getElementById('dashID').style.display='none';
@@ -84,27 +95,7 @@
 
         // Load the required SharePoint libraries
         $(document).ready(function () {
-            //input,div[title]
-
-            $('[data-toggle="tooltip"]').tooltip(); 
-            
-            /* 
-                    $('.myRight').tooltip({
-                        
-                        hide: { effect: "blind", duration: 100 },
-                        position: { my: "left+10 center", at: "right center" }
-                     });
-
-                    $('.myLeft').tooltip({
-                        
-                    hide: { effect: "blind", duration: 100 },
-                    position: { my: "right+10 center", at: "right center" }
-                    });
-
-            */
-           
-            //Get the URI decoded URLs.
-            //$('#DeltaPlaceHolderPageTitleInTitleArea').css('display','none');
+                    
             // resources are in URLs in the form:
 
             // web_url/_layouts/15/resource
@@ -120,7 +111,33 @@
                 })
 				
 			});
-			//
+            //
+            /*
+             $.getScript("/sites/dev/js/" + "bootstrap.min.js", function(){
+
+                    console.log('done with SP.bootstrap ');
+
+                    $('[data-toggle="tooltip"]').tooltip();
+
+                    $.getScript("/sites/dev/js/" + "bootstrap-datepicker.min.js", function(){
+
+                        console.log('done with SP.bootstrap-datepicker.min.js ');
+
+                        $.getScript("/sites/dev/js/" + "moment.min.js", function(){
+
+                            console.log('done with SP.moment.min.js');
+
+                            $.getScript("/sites/dev/js/" + "classList.min.js", function(){
+
+                                console.log('done with SP.classList.min.js');
+
+                            });
+
+                        });
+
+                    });
+
+                });*/
 			
         });
 	
@@ -142,14 +159,12 @@
    			$(document).ready(function () {
                 
                     $('#peoplePickerDivBISO_TopSpan div').each(function(){
-                                    
-                            console.log('html value ', $(this)[0])
+                           
                         if($(this)[0]) $(this)[0].removeAttribute('title');
                     });
                     $('.sp-peoplepicker-editorInput').each(function(){
                             
-                                console.log('html value ', $(this)[0])
-                            if($(this)[0]) $(this)[0].removeAttribute('title');
+                        if($(this)[0]) $(this)[0].removeAttribute('title');
                     });
                    
 
@@ -238,7 +253,7 @@
                         if($('#idSearch'))   $('#idSearch').removeAttr('disabled');
                         if($('#idH4'))   $('#idH4').css('display','none');
                         if($('#H3newReq'))   $('#H3newReq').css('display','');
-                        if($('#H3Grap'))   $('#H3Grap').css('display','none');
+                        if($('#H3Grap'))   $('#H3Grap').css('display','');
                         if($('#myReq'))  $('#myReq').css('display','');                   
                         if($('#idAll'))   $('#idAll').removeAttr('disabled');
                         if($('#endDate'))   $('#endDate').removeAttr('disabled');
@@ -269,7 +284,11 @@ var xmlFile;
 var xmlItemPath='';
 var ProjectName='';
 var focusMessage='';
+var strSupplier=''
 var isError=false;
+var maxID='';
+var folderData;
+var regex1 = RegExp('[a-zA-Z0-9 ]','g');
  // Get the server URL.
  var serverUrl = _spPageContextInfo.webAbsoluteUrl;
  var folderPath='';
@@ -277,13 +296,45 @@ function addNewFile(){
     $('#msgID').css('display','none');
     $("#myModalDlg").css('display','');
     $(".saving").css('display','');
-   
-    //$(".modal-backdrop.in").show();
-    //$('#myModal').modal('show');
+    $('#newSave').css("display","none");
+    $('#newSaveFoot').css("display","none");
+  
     var newDate = new Date();
     newDate = newDate.getMinutes()+''+newDate.getSeconds();
-    ProjectName = $("[name='Sector']").val() +'-'+$("[name='Supplier']").val() + '-'+$("[name='Product']").val();
+    strSupplier = $("[name='Supplier']").val();
+    ProjectName = $("[name='Sector']").val() +'-'+ $("[name='Supplier']").val().trim() + '-'+$("[name='Product']").val().trim();
+    ProjectName = ProjectName.trim()+'-'+maxID;
     folderPath  = serverUrl+"/_api/Web/GetFileByServerRelativeUrl('/sites/dev/CARTProjects/"+ProjectName+".xml')/ListItemAllFields";
+    var isOK = false; 
+    //var OK = re.test($("[name='Supplier']").val());
+    var sText  = $("[name='Supplier']").val();
+    var isSupplier = false; 
+    var isProduct = false; 
+    var array1;
+  	var cad = '';
+	while ((array1 = regex1.exec(sText)) !== null) {
+	
+		cad += array1[0];
+	}
+	if(cad == sText){ isSupplier = true;}
+	sText = $("[name='Product']").val();
+    cad = '';
+    while ((array1 = regex1.exec(sText)) !== null) {
+		
+		cad += array1[0];
+    }
+    if(cad == sText){ isProduct = true;}
+   
+    if(!isProduct || !isSupplier){
+       
+        $('#msgID').css('display','');
+        focusMessage = 'Error Supplier or Product , please try a new value ';
+        onerrorFlag = focusMessage;
+        $('.saving').css('display','none');
+        $('#newSave').css('display',''); $('#newSaveFoot').css("display","");
+    
+    }else isOK =  true;
+
     //calling folder function.....toolTip..$("[toolTip]")
     if(focusMessage.length<=0 && 
     $("[name='Sector']").length>0 && 
@@ -294,7 +345,7 @@ function addNewFile(){
     $("[name='SSiteLoc']").length>0 && 
     $("[name='AMethod']").length>0 &&
     $("[name='CSI']").length>0 &&
-    $("[name='CTC']").length>0 && 
+    $("[name='CTC']").length>0 && isOK &&
     xmlItemPath.length<=0 &&
     !isNaN($("[name='CSI']").val()) && 
     !isNaN($("[name='CTC']").val()))
@@ -304,7 +355,7 @@ function addNewFile(){
         focusMessage = 'Error Project folder already exist, please try a new one';
         onerrorFlag = focusMessage;
         $('.saving').css('display','none');
-      
+        $('#newSave').css('display',''); $('#newSaveFoot').css("display","");
     }).fail(function(){
         
         $('#footwarningId').css('display','none');
@@ -315,14 +366,15 @@ function addNewFile(){
         console.log('folder does not exist ', ProjectName);
         addFolfer(ProjectName)
         .done(function(data){
-                  
+            console.log("Done AddFolder  ", ProjectName);    
+            folderData = data;  
             uploadFile();
         }).fail(function(){
             console.log("Error addFolfer  ");
-            
+            $('#newSave').css('display','');
             focusMessage = 'Project Name error, please contact support ' + ProjectName ;
             onerrorFlag = focusMessage;
-            $('.saving').css('display','none');
+            $('.saving').css('display','');
             $('#msgID').css('display','');
             $('#warningId').css('display','');
             $('#footwarningId').css('display','');
@@ -394,7 +446,7 @@ function uploadFile() {
     var fileInput = $('#getFile');
 	
     if(myBlob){
-        newName = ProjectName +".xml"
+        newName = ProjectName.trim() +".xml"
     }
     else if(fileInput && fileInput[0].files.length>0){
         newName = fileInput[0].files[0].name;
@@ -415,23 +467,25 @@ function uploadFile() {
         // Add the file to the SharePoint folder.
         addFileToFolder(arrayBuffer)
             .done(function (file, status, xhr) {
-            //console.log('ListItemAllFields ', file.d.ListItemAllFields.__deferred.uri);
-            
-            if(myBlob) xmlItemPath = folderPath;//file.d.ListItemAllFields.__deferred.uri;
-            else xmlItemPath = file.d.ListItemAllFields.__deferred.uri;
-
+              
+                if(myBlob) xmlItemPath = folderPath;//file.d.ListItemAllFields.__deferred.uri;
+                else xmlItemPath = file.d.ListItemAllFields.__deferred.uri;
+               
             // Get the list item that corresponds to the uploaded file.
                 getListItem(xmlItemPath)
                     .done(function (listItem, status, xhr) {
-
+                        
                         //console.log('file uploaded and getItem.done -->', xmlItemPath);
                         //Change the display name and title of the list item.
-                        if(myBlob) console.log('file uploaded and myBlob');
+                        if(myBlob) console.log('file uploaded with myBlob', listItem.d);
+                        /*
                         else {
-                                updateListItem(listItem.d.__metadata,$('#FileId').html(),$('#uploadFileId').html())
+                                console.log(' folderData ', folderData);
+                                updateListItem("sites/dev/_api/Web/Lists/getByTitle('CARTDocs')/items(269)",listItem.d.ID,ProjectName)
                                 .done(function (data, status, xhr) {
                             
                                     console.log('file uploaded data ', file.d);
+                                    
                                     $('#uploadSuccess').css('display','');
                                     $("[name='uploadName']").html('Upload');
 	                                $('#btnFile').removeAttr('disabled');
@@ -448,7 +502,7 @@ function uploadFile() {
                                     $('#btnFile').removeAttr('disabled');
                                 });
 
-                        }
+                            }*/
                             
                     
                     }).fail(function(){
@@ -528,22 +582,26 @@ function uploadFile() {
         // The example gets the list item type from the item's metadata, but you can also get it from the
         // ListItemEntityTypeFullName property of the list.
         var body ='';
+       /*
         if(myBlob) body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}'}}",
-            itemMetadata.type, newName, newName);
+            itemMetadata.type, ParentID, CARTProjectName);
         else if(fileInput && fileInput[0].files.length>0)
             body = String.format("{{'__metadata':{{'type':'{0}'}},'FileLeafRef':'{1}','Title':'{2}','ParentID':'{3}','CARTProjectName':'{4}'}}",
-            itemMetadata.type, newName, newName,ParentID,CARTProjectName);
+            itemMetadata.type, newName, newName,ParentID,CARTProjectName);*/
         
+            body = String.format("{{'__metadata':{{'type':'SP.Data.CARTDocsItem'}},'ParentID':'{0}','Title':'{1}'}}",
+            ParentID, CARTProjectName);
+
+            console.log(' itemMetadata ', body , itemMetadata); 
         // Send the request and return the promise.
         // This call does not return response content from the server.
         return jQuery.ajax({
-            url: itemMetadata.uri,
+            url: itemMetadata,
             type: "POST",
             data: body,
             headers: {
                 "X-RequestDigest": jQuery("#__REQUESTDIGEST").val(),
                 "content-type": "application/json;odata=verbose",
-                "content-length": body.length,
                 "IF-MATCH": itemMetadata.etag,
                 "X-HTTP-Method": "MERGE"
             }

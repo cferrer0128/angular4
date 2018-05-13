@@ -5,6 +5,7 @@ import { ProjectService } from '../services/project.service';
 import {Project} from '../models/project';
 
 import { Router } from '@angular/router';
+import { ReturnStatement } from '@angular/compiler';
 
 
 declare var jquery: any;
@@ -26,6 +27,7 @@ export class ReportComponent implements OnInit {
     public  projectList:Project[];
     private pListGlobal: Project[];
     private graphicList: Project[];
+    public serviceList:Project[];
     private myitem = [];
     public  isFull: boolean = false;
     private isUpdate: boolean = false;
@@ -61,7 +63,15 @@ export class ReportComponent implements OnInit {
 		,'','','','','','','','','','','','','',
 		'','','','','','','','','','','','','','','','');
 	 
-    
+    setInterval(()=>{
+				 				
+      if(this._projectService.filterRecords && this.projectList && 
+         (this._projectService.filterRecords.length != this.projectList.length)){
+         
+           this.serviceList = _projectService.filterRecords;
+         
+      }
+      },1000)
     
     }
 	  
@@ -109,8 +119,33 @@ export class ReportComponent implements OnInit {
           
         });
 		
-	  }
+    }
+    
+    private  validateDate(field:any){
 
+      if(field == null || field.toString() == "undefined") return false;
+      
+      if(field && field.length<=0) return false;
+
+      let dateChk = new Date(field);
+     
+      return dateChk.toString().indexOf("Invalid")<0;
+
+  }
+
+
+    calculateBGColor(xvalue){
+
+      if(this.validateDate(xvalue))
+      return {
+        background: '#6ece76'
+      }
+      else
+      return {
+        background: '#ddd'
+      }
+
+    }
   	goProject(project){
 	    this._router.navigate([this.routerUrl +'/', { id: null }]);
   	}
@@ -217,7 +252,8 @@ export class ReportComponent implements OnInit {
         this.projectList = this.pListGlobal; 
         window["isChange"] = true;window["isAll"]=true;
         this.initDate ="";this.endDate="";
-        this.createGraphic(this.projectList);
+        this.serviceList = undefined;
+        //this.createGraphic(this.projectList);
         ProjectService.filteredData = this.projectList;
         this.filterQuery = "";
         this.isSearch = false;
@@ -225,13 +261,14 @@ export class ReportComponent implements OnInit {
       }
   	}
   
-	  //ngOnInit
+	  //ngOnInit this.service.filterRecords
     ngOnInit() {
       window["selected"] = false;
       this.isInGroup = false;
       
       if (ProjectService.filteredData.length>0){
         this.projectList = ProjectService.filteredData;
+        this.pListGlobal = this.projectList;
         this.isFull = true;
         window["isChange"] = this.isFull;  
         window["isAll"]=this.isFull;

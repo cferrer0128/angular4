@@ -448,7 +448,7 @@ export class DetailComponent implements OnInit, OnDestroy {
 										this.isUserReq = this.localProject.requester == this._projectService.spCurrentUser.Title?true:false;
 										this.isuserReady =  true;
 										//User Group;
-										this._projectService.getUserGroup(window["userId"])
+										this._projectService.getUserGroup()
 											.subscribe(group =>{
 												
 												for (var i = 0; i < group.length; i++) {
@@ -730,7 +730,7 @@ export class DetailComponent implements OnInit, OnDestroy {
 		
 	
 	
-		chkContract(key){
+	chkContract(key){
 
 		if(key.name =="ContractChkNo"){
 			this.chkContractValue = key.checked;
@@ -793,7 +793,7 @@ export class DetailComponent implements OnInit, OnDestroy {
 	public ContractChkNo;
 	public CartAppReChkNo;
 	public CartSectChkNo:boolean=false;
-
+	public isCancel:boolean=false;
 
 	changeValue(key){
 		
@@ -963,10 +963,44 @@ export class DetailComponent implements OnInit, OnDestroy {
 
 	goProject() {
 
-		
+		console.log('go to ' , window["routeURL"]);
          this._route.navigate([window["routeURL"]]);
        
 
+	}
+
+	showCancel(isSave){
+		this.isCancel = isSave;
+		this.isFocus = isSave;
+		this.focusMessage = isSave==true?"this record will be Cancelled would you like to continue?":""
+	}
+	goCancelProject(isSave){
+		let ProjectCancelItem = {
+			__metadata:{type:'SP.Data.CARTProjectsItem'},
+			Request_x0020_Status:"Cancelled"
+		}
+		//updating
+		
+		console.log('Data before Cancel ' , ProjectCancelItem);
+		let data = this.metadata;
+		if(isSave)
+			this._projectService.updateProjects(ProjectCancelItem,"CARTProjects", data)
+				.then(e =>{
+						//this.localProject.id = data.Id;
+						$('#uploadSuccess').css('display','');
+						$('#idSaved').css('display','');
+						$('#msgID').css('display','none');
+						$('#modalID').css('display','none');
+						$('#SavingId').css('display','none');
+						$('#SavedId').css('display','');
+						this.isSaved = true;
+						this.isCancel = false;
+						this.isFocus =  false;
+											
+						
+							
+				},err => { console.log("goCancelProject Error: " + err._body);  this.isCancel = false;});
+		//end updating
 	}
 	
 

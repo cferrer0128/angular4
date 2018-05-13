@@ -18,7 +18,7 @@ export class ProjectService {
     public Id: string;
     private _flights: any;
     private sQuery: any;
-    private LIST_URL = window["spSite"] + "/_api/web/lists/getByTitle('CARTProjects')/items";
+    public LIST_URL = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('CARTProjects')/items";
     public filterQuery:string=""
     public filterRecords:any;
     public static filteredData:any;
@@ -79,7 +79,7 @@ export class ProjectService {
      }
      //casttheVode
      postCARTProject(jsonObject:any , listName:any){
-        var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('"+listName+"')/fields";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('"+listName+"')/fields";
       	return this.http.post(sListUrl,JSON.stringify(jsonObject), { headers: this.setHeaders('POST') })
                 .map((res: Response) => res.json().d.results)
                 .toPromise();
@@ -88,7 +88,7 @@ export class ProjectService {
      }
       //casttheVode
       castVote(jsonObject:any){
-        var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('CARTApprovalVote')/items";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('CARTApprovalVote')/items";
       	return this.http.post(sListUrl,JSON.stringify(jsonObject), { headers: this.setHeaders('POST') })
                 .map((res: Response) => res.json().d.results);
 
@@ -97,7 +97,7 @@ export class ProjectService {
      public meta:any;
      updateProjects(jsonObject:any, listName:any , meta:any){
         this.meta =  meta;
-        //var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('"+listName+"')/items("+ ID +")";
+        //var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('"+listName+"')/items("+ ID +")";
 
         var sListUrl = meta.__metadata.uri;
         console.log('URL Before POST ', sListUrl )
@@ -108,7 +108,7 @@ export class ProjectService {
      }
      //postProjects
      postProjects(jsonObject:any, listName:any){
-        var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('"+listName+"')/items";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('"+listName+"')/items";
       	return this.http.post(sListUrl,JSON.stringify(jsonObject), { headers: this.setHeaders('POST') })
                 .map((res: Response) => res.json().d.results)
                 .toPromise();
@@ -118,7 +118,7 @@ export class ProjectService {
       getProjectById(Id: string ) {
         let results = [];
          if (Id) {
-            var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('CARTProjects')/items("+Id+")";
+            var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('CARTProjects')/items("+Id+")";
             
             return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) => res.json().d)
@@ -139,6 +139,8 @@ export class ProjectService {
                     if (res.json().d.__next) {
                         results.push({next: res.json().d.__next});
                     }
+
+                    console.log('OK with getProjects..!', results);
                     return results;
                 });
         }else {
@@ -149,7 +151,7 @@ export class ProjectService {
      }
      //getCurrentUser
      getCurrentUser(){
-		var sListUrl = window["spSite"] + "/_api/web/getuserbyid(" + window["userId"] +")";
+		var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/getuserbyid(" + _spPageContextInfo.userId +")";
 		return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) =>{
                     this.spCurrentUser = res.json().d;
@@ -159,7 +161,7 @@ export class ProjectService {
     }
     //Xml File
   	getXmlFilesbyName(projectName, isXML){
-        var sListUrl = window["spSite"]  + "/CARTProjects/" + projectName +".xml";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl  + "/CARTProjects/" + projectName +".xml";
         console.log('looking for ', sListUrl)
         var xml:any;
         var xmltext:any;
@@ -176,14 +178,14 @@ export class ProjectService {
     }        
     //get  List any list
 	getFilesbyName(projectName){
-        var sListUrl = window["spSite"]  + "/_api/web/getfolderbyserverrelativeurl('CARTDocs/" + projectName +"')/files";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl  + "/_api/web/getfolderbyserverrelativeurl('CARTDocs/" + projectName +"')/files";
         console.log('URL Before get files ' , sListUrl) , projectName
 		return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) => res.json().d.results);
     }
     //get curretn User group List
-    getUserGroup(uId){
-          var sListUrl = window["spSite"] + "/_api/web/GetUserById('" + uId +"')/groups";
+    getUserGroup(){
+          var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/GetUserById('" + _spPageContextInfo.userId +"')/groups";
         
 		return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) => res.json().d.results);
@@ -192,7 +194,7 @@ export class ProjectService {
     //get  List any list
 	getListbyName(listName, Query){
         //?&orderby=Sector
-        var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('" + listName +"')/items" + Query;
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName +"')/items" + Query;
         
 		return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) => res.json().d.results);
@@ -210,7 +212,7 @@ export class ProjectService {
      //get  List any list
 	getFieldListbyName(listName){
         //?&orderby=Sector
-        var sListUrl = window["spSite"] + "/_api/web/lists/getByTitle('" + listName +"')/fields";
+        var sListUrl = _spPageContextInfo.webAbsoluteUrl + "/_api/web/lists/getByTitle('" + listName +"')/fields";
         
 		return this.http.get(sListUrl, { headers: this.setHeaders('') })
                 .map((res: Response) => res.json().d.results)
